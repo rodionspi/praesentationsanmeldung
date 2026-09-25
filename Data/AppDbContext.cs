@@ -1,12 +1,20 @@
 using Microsoft.EntityFrameworkCore;
+// Das brauche ich um C#-Code mit Datebank zu verbinden ohne dass
+// man die manuelle SQL-Befehle schreiben muss.
 using praesentationsanmeldung.Models;
 
 namespace praesentationsanmeldung.Data;
 
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    // wegen dem DbContext bekommt eine Klasse die Methoden dazu, wie SaveChanges(), Add() und Remove().
+    public AppDbContext(DbContextOptions<AppDbContext> options) :base(options)
     {
+        // in options wird übergeben welche Datenbank verwendet wird also SQL Server wird bei uns
+        //benutzt und es wird auch dort übergibt wo die datenbank liegt
+
+        // :base(options) schickt einfach options zum Konstruktor von DbContext weiter,
+        // da DbContext diesen SQL-Server-Pfad unbedingt kennen müss
     }
 
     public DbSet<Admin> Admins => Set<Admin>();
@@ -14,9 +22,13 @@ public class AppDbContext : DbContext
     public DbSet<Raum> Raeume => Set<Raum>();
     public DbSet<Praesentation> Praesentationen => Set<Praesentation>();
     public DbSet<Eintragung> Eintragungen => Set<Eintragung>();
+    // DBSet<Admin> entspricht einer "Tabelle" mit Objekten vom Typ Admin(ist alles in Admin.cs)
+    // Admins ist die Name der Eigenschfat und standartmässig auch der Tabellenname in SQL
+    // Das => Set<Admin>() ist eine Anweisung, damit DbContext eine Verbindung zur Tabelle von Admins herstellt
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // mit override sagen wir, dass die geerbte Methode überschrieben werden soll.
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Admin>(entity =>
@@ -63,7 +75,6 @@ public class AppDbContext : DbContext
                 .HasForeignKey(e => e.PraesentationId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Niemand darf sich zweimal für dieselbe Präsentation eintragen.
             entity.HasIndex(e => new { e.G3SusId, e.PraesentationId }).IsUnique();
         });
     }
