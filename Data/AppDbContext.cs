@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 // Das brauche ich um C#-Code mit Datebank zu verbinden ohne dass
 // man die manuelle SQL-Befehle schreiben muss.
+// Allgemeimein Entity Framework Core (EF Core) ist ein objektrelationaler Mapper (ORM),
+// der das Speichern und Lesen von Daten in einer Datenbank aus .NET-Anwendungen heraus vereinfacht.
 using praesentationsanmeldung.Models;
 
 namespace praesentationsanmeldung.Data;
@@ -30,13 +32,22 @@ public class AppDbContext : DbContext
     {
         // mit override sagen wir, dass die geerbte Methode überschrieben werden soll.
         base.OnModelCreating(modelBuilder);
+        // OnModelCreating ist eine Methode aus DbContext, die EF Core einmal beim Start
+        // aufruft, um das Datenbankmodell aufzubauen
+        // also hier haben wir die OnMOdelCreating Funktion übergeschrieben, aber rufen zuerst die Originalversion
+        // der Elternklasse auf, damit deren Standartkonfiguration erhalten bleibt.
+        // Das ist gute Praxis, auch wenn sie im Moment nichts Besonderes macht.
 
         modelBuilder.Entity<Admin>(entity =>
+        // wählt die Entität Admin aus. entity => { ... } ist ein Lambda-Ausdruck: eine kleine anonyme
+        // Funktion, die das Objekt entity bekommt, mit dem wir Admin konfigurieren.
         {
             entity.Property(a => a.Benutzername).IsRequired().HasMaxLength(100);
+            // a steht für "ein Admin"
             entity.Property(a => a.PasswortHash).IsRequired();
             entity.HasIndex(a => a.Benutzername).IsUnique();
         });
+        // Hier ist eigentlich alles logisch.
 
         modelBuilder.Entity<G3Sus>(entity =>
         {
@@ -61,6 +72,7 @@ public class AppDbContext : DbContext
                 .WithMany(r => r.Praesentationen)
                 .HasForeignKey(p => p.RaumId)
                 .OnDelete(DeleteBehavior.Restrict);
+            // Wenn jemand einen Raum löschen will, in dem noch Präsentationen stattfinden, wird ein Fehler ausgegeben.
         });
 
         modelBuilder.Entity<Eintragung>(entity =>
@@ -74,8 +86,11 @@ public class AppDbContext : DbContext
                 .WithMany(p => p.Eintragungen)
                 .HasForeignKey(e => e.PraesentationId)
                 .OnDelete(DeleteBehavior.Cascade);
+            // DeleteBehavior.Cascade heisst, wenn ein Schüler gelöscht wird,
+            // dann werden alle seine Eintragungen automatisch mitgelöscht.
 
             entity.HasIndex(e => new { e.G3SusId, e.PraesentationId }).IsUnique();
+            // IsUnique für diesen Objekt heisst, dass es nur einmal z.B {5, 1} in Datenbank reingeschrieben kann.
         });
     }
 }
