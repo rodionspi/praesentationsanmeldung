@@ -1,10 +1,26 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<!-- Diese Datei beschreibt einfach wie das Projekt gebaut werden soll. In XML geschrieben -->
 
+<Project Sdk="Microsoft.NET.Sdk.Web">
+<!-- <Project> ist ein Wurzelelement 
+     SDK steht für Software Development Kit „Entwicklungs-Werkzeugkasten“
+	 Microsoft.NET.Sdk.Web ist das SDK für Webanwendungen
+	 -->
   <PropertyGroup>
+	  <!-- <Property Group> öffnet eine Gruppe von Eigenschaften, 
+	  also Einstellungen für das ganze Projekt -->
     <TargetFramework>net10.0</TargetFramework>
+	  <!-- <TargetFramework> heisst, dass wir das Programm mit .NET 10 bauen
+	        Und überprüft, ob auf dem Rechner auf dem es läuft,
+			.NET 10 installiert sein muss -->
     <ImplicitUsings>enable</ImplicitUsings>
+	  <!-- Damit für der Compiler häufig gebrauchte
+	        using-Anweisungen automatisch hinzu -->
     <Nullable>enable</Nullable>
+	  <!-- Null-Prüfung des Compilers wurde eingeschaltet
+	       z.B: string heisst: darf nicht null sein
+		        string? heisst darf null sein -->
     <UserSecretsId>982f608a-55bb-4418-9288-f4aab5788a0f</UserSecretsId>
+	  <!-- Diese Id ist eine ID für die User Secrets und zeigt, wo diese Dadten eigentlich ist auf diesem PC -->
   </PropertyGroup>
 
   <ItemGroup>
