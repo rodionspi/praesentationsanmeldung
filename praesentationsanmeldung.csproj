@@ -33,14 +33,10 @@
       <PrivateAssets>all</PrivateAssets>
 		<!-- Packet bleibt privat für das Projekt. Würde ein anderes Projekt später das Projekt einbinden,
 		     bekäme es dieses Paket nicht automatisch mit.-->
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		<!-- Hier schreiben wir welche Teile des Projekts benutzt werden.
-			-->
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.12">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 

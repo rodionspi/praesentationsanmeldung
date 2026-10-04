@@ -5,3 +5,5 @@ Eine Migration ist eine Bauanleitung für die Datenbank. Sie beschreibt Schritt 
 Eigenschaft ist das deutsche Wort für Property in C#. Gemeint ist ein Wert, den ein Objekt hat, also ein Merkmal, das das Objekt beschreibt.
 
 Build (englisch to build, „bauen“) ist der Vorgang, bei dem aus deinem Quellcode ein lauffähiges Programm entsteht.
+
+SSMS steht für SQL Server Management Studio.
