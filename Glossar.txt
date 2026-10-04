@@ -7,3 +7,32 @@ Eigenschaft ist das deutsche Wort für Property in C#. Gemeint ist ein Wert, den
 Build (englisch to build, „bauen“) ist der Vorgang, bei dem aus deinem Quellcode ein lauffähiges Programm entsteht.
 
 SSMS steht für SQL Server Management Studio.
+
+Bei der Methodenüberlastung können mehrere Methoden denselben Namen mit unterschiedlichen Methoden haben Parameter:
+
+Ein Konstruktor ist eine spezielle Methode, die zur Initialisierung verwendet wird Objekte. Der Vorteil eines Konstruktors ist, dass er aufgerufen wird, wenn ein Objekt einer Klasse erstellt wird.
+
+public: Keine Zugriffsbeschränkungen. Code in jeder Assembly kann auf diesen Typ oder dieses Member zugreifen. 
+
+private: Nur Code, der in derselben class oder struct deklariert ist, kann auf dieses Member zugreifen. 
+
+protected: Nur Code im selben class oder in einem abgeleiteten class kann auf diesen Typ oder dieses Mitglied zugreifen. 
+
+internal: Nur Code in derselben Assembly kann auf diesen Typ oder auf dieses Member zugreifen.
+
+protected internal: Nur Code in derselben Assembly oder in einer abgeleiteten Klasse in einer anderen Assembly kann auf diesen Typ oder dieses Member zugreifen. 
+
+private protected: Nur Code in derselben Assembly und in derselben Klasse oder einer abgeleiteten Klasse kann auf diesen Typ oder dieses Member zugreifen
+
+Kapselung in C# bedeutet, dass Daten und Methoden einer Klasse in einer Einheit zusammengefasst und der Zugriff auf die internen Daten kontrolliert wird.
+
+Warum Kapselung?
+Bessere Kontrolle über Klassenelemente (verringert die Möglichkeit, dass du selbst (oder andere) den Code durcheinanderbringst)
+Felder können nur lesbar gemacht werden (wenn nur die get-Methode verwendet wird) oder nur schreibbar (wenn nur die set-Methode verwendet wird)
+Flexibel: Der Programmierer kann einen Teil des Codes ändern, ohne andere Teile zu beeinflussen
+Erhöhte Datensicherheit
+
+In C# ist es möglich, Felder und Methoden von einer Klasse zur anderen zu erben. Wir gruppieren das "Vererbungskonzept" in zwei Kategorien:
+
+Abgeleitete Klasse (Kind) – die Klasse, die von einer anderen Klasse erbt
+Basisklasse (Elternteil) – die Klasse, die von geerbt wird
