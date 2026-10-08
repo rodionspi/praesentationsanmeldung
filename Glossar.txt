@@ -112,3 +112,7 @@ class Program
 }
 
 EF Core (Entity Framework Core) ist eine ORM-Bibliothek (Object-Relational Mapper) von Microsoft für .NET. Sie übersetzt zwischen zwei Welten, die normalerweise nicht zusammenpassen
+
+Ein Endpoint ist ganz allgemein: eine Kombination aus URL-Pfad + HTTP-Methode, die am Ende tatsächlich Code ausführt und eine Response liefert.
+
+Ein Controller ist in ASP.NET Core eine Klasse, die mehrere zusammengehörige Endpoints als Methoden gruppiert — genannt Actions.
