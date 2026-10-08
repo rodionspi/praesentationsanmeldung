@@ -1,4 +1,4 @@
-namespace praesentationsanmeldung.Models;
+namespace praesentationsanmeldung.Migrations;
 
 public class Admin
 {
