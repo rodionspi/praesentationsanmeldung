@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using praesentationsanmeldung.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using praesentationsanmeldung.Auth;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +10,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
 builder.Services.AddControllersWithViews();
+
+//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+//    .AddCookie
 
 var app = builder.Build();
 
