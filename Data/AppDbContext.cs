@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using praesentationsanmeldung.Migrations;
+
 // Das brauche ich um C#-Code mit Datebank zu verbinden ohne dass
 // man die manuelle SQL-Befehle schreiben muss.
 // Allgemeimein Entity Framework Core (EF Core) ist ein objektrelationaler Mapper (ORM),

@@ -110,3 +110,5 @@ class Program
     Console.WriteLine(myVar);
   }
 }
+
+EF Core (Entity Framework Core) ist eine ORM-Bibliothek (Object-Relational Mapper) von Microsoft für .NET. Sie übersetzt zwischen zwei Welten, die normalerweise nicht zusammenpassen
