@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using praesentationsanmeldung.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using praesentationsanmeldung.Auth;
+using Microsoft.AspNetCore.Identity;
+using praesentationsanmeldung.Migrations;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +40,9 @@ builder.Services.AddAuthorization(options =>
         options.AddPolicy(Rollen.G3SuS, policy =>
     policy.RequireRole(Rollen.G3SuS));
 });
+
+builder.Services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
+//Diese Zeile registriert einen Dependency-Injection-Service zum sicheren Hashen von Passwörtern
 
 var app = builder.Build();
 

@@ -116,3 +116,9 @@ EF Core (Entity Framework Core) ist eine ORM-Bibliothek (Object-Relational Mappe
 Ein Endpoint ist ganz allgemein: eine Kombination aus URL-Pfad + HTTP-Methode, die am Ende tatsächlich Code ausführt und eine Response liefert.
 
 Ein Controller ist in ASP.NET Core eine Klasse, die mehrere zusammengehörige Endpoints als Methoden gruppiert — genannt Actions.
+
+Salt ist ein Zufallswert, der vor dem Hashen dazugemischt wird. Deshalb ergibt dasselbe Passwort jedes Mal einen anderen Hash. Zwei Admins mit gleichem Passwort sehen in der Datenbank also verschieden aus.
+
+PBKDF2 heisst: Es wird nicht einmal gehasht, sondern 100'000-mal (HMAC-SHA512). Dein Login dauert dadurch nur ein paar Millisekunden. Ein Angreifer, der Milliarden Passwörter durchprobieren will, braucht dafür aber riesig viel Zeit.
+
+PasswordHasher macht alles drei automatisch. Salt, Anzahl Durchläufe und Ergebnis packt er in einen Text, der ungefähr so aussieht: AQAAAAIAAYagAAAAE…
