@@ -71,11 +71,6 @@ using (var scope = app.Services.CreateScope())
 
 
 }
-app.UseHttpsRedirection();
-//Wenn eine Anfrage über HTTP (unverschlüsselt) kommt, wird sie automatisch auf HTTPS umgeleitet (301/307 Redirect)
-app.UseRouting();
-app.UseAuthentication();
-app.UseAuthorization();
 
 if (!app.Environment.IsDevelopment())
 {
