@@ -1,8 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-using praesentationsanmeldung.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using praesentationsanmeldung.Auth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using praesentationsanmeldung.Auth;
+using praesentationsanmeldung.Data;
 using praesentationsanmeldung.Migrations;
 
 
@@ -46,6 +47,30 @@ builder.Services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+//AppDbContext gibt es nur innerhalb eines „Scopes“. Beim Start läuft noch keine Anfrage, deshalb öffne ich selbst einen. app.Services ist der Root-Service-Provider (der ganzen App). Daraus direkt einen Scoped-Service zu holen wäre ein Fehler/Warning (“captive dependency”) — stattdessen erzeugt man manuell einen neuen, temporären Scope, der sich wie ein “virtueller Request” verhält. using sorgt dafür, dass der Scope am Ende des Blocks korrekt disposed wird
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    //Holt eine Instanz von AppDbContext aus diesem neuen Scope — genau so, wie es sonst automatisch per Constructor Injection in einem Controller passieren würde, nur hier manuell angefordert.GetRequiredService wirft eine Exception, falls der Service nicht registriert ist(im Gegensatz zu GetService, das null zurückgeben würde)
+    var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<Admin>>();
+    //Gleiches Prinzip — holt den PasswordHasher<Admin>, den ich vorher mit AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>() registriert habe.
+    var startPasswort = app.Configuration["StartAdmin:Passwort"];
+    //Liest das Passwort aus den User Secrets
+    
+    if (!string.IsNullOrEmpty(startPasswort) && !db.Admins.Any())
+    //!db.Admins.Any() — es gibt noch keinen Admin in der Datenbank-Tabelle (EF Core übersetzt .Any() in ein effizientes SQL EXISTS, nicht SELECT *)
+    {
+        var admin = new Admin { Benutzername = "admin" };
+        //Erstellt ein neues Admin-Objekt (Entity) im Speicher — noch nicht in der DB gespeichert, nur ein C#-Objekt mit Benutzername = "admin".
+        admin.PasswortHash = hasher.HashPassword(admin, startPasswort);
+        db.Admins.Add(admin);
+        //Markiert das admin - Objekt in EF Core als “neu hinzuzufügen” — das DbSet<Admin> ist noch im Tracking-Zustand, es ist noch kein SQL - Befehl an die Datenbank gegangen.
+        db.SaveChanges();
+        //Erst hier wird tatsächlich ein INSERT-SQL-Statement an die Datenbank gesendet und ausgeführt. Ohne diesen Aufruf würde gar nichts gespeichert werden.
+    }
+
+
+}
 app.UseHttpsRedirection();
 //Wenn eine Anfrage über HTTP (unverschlüsselt) kommt, wird sie automatisch auf HTTPS umgeleitet (301/307 Redirect)
 app.UseRouting();

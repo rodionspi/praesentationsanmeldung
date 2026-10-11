@@ -122,3 +122,5 @@ Salt ist ein Zufallswert, der vor dem Hashen dazugemischt wird. Deshalb ergibt d
 PBKDF2 heisst: Es wird nicht einmal gehasht, sondern 100'000-mal (HMAC-SHA512). Dein Login dauert dadurch nur ein paar Millisekunden. Ein Angreifer, der Milliarden Passwörter durchprobieren will, braucht dafür aber riesig viel Zeit.
 
 PasswordHasher macht alles drei automatisch. Salt, Anzahl Durchläufe und Ergebnis packt er in einen Text, der ungefähr so aussieht: AQAAAAIAAYagAAAAE…
+
+Seeding heisst: beim Start der App automatisch ein paar Grunddaten in die Datenbank schreiben, die sie zum Funktionieren braucht — bevor irgendein echter Nutzer sie überhaupt benutzt.
