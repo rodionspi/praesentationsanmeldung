@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
+using Microsoft.AspNetCore.Authorization;
 using praesentationsanmeldung.Migrations;
 
 namespace praesentationsanmeldung.Controllers;
@@ -22,12 +23,14 @@ public class AccountController : Controller
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public IActionResult Login()
     {
         return View();
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ValidateAntiForgeryToken]
     //Kurz erklärt: Ohne das könnte eine fremde Webseite, auf der ein Benutzer zufällig gerade eingeloggt ist, heimlich ein Formular an meine App schicken und sich als ihn ausgeben — weil Cookies vom Browser automatisch mitgeschickt werden.
     public async Task<IActionResult> Login(string? benutzername, string? passwort)
