@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Authorization;
 using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
 using praesentationsanmeldung.Migrations;
@@ -36,10 +36,12 @@ builder.Services.AddAuthentication
 
 builder.Services.AddAuthorization(options =>
 {
-        options.AddPolicy(Rollen.Admin, policy =>
-    policy.RequireRole(Rollen.Admin));
-        options.AddPolicy(Rollen.G3SuS, policy =>
-    policy.RequireRole(Rollen.G3SuS));
+        options.AddPolicy(Rollen.Admin, policy => policy.RequireRole(Rollen.Admin));
+        options.AddPolicy(Rollen.G3SuS, policy => policy.RequireRole(Rollen.G3SuS));
+
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
 });
 
 builder.Services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
@@ -80,9 +82,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
+app.MapStaticAssets().AllowAnonymous();
 app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")
