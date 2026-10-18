@@ -32,6 +32,7 @@ public class ImportController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> G3SusImportieren(IFormFile? datei)
+    // Weil die Methode nicht sofort ein Ergebnis hat — sie muss erst auf Datei-Lesen und Datenbank-Speichern warten. Also sagt der Rückgabetyp ehrlich: “du bekommst nicht direkt ein IActionResult, du bekommst eine Wartemarke dafür, die sich später in ein IActionResult einlöst.”
     {
         var zeilen = await DateiLesen(datei, "Vorname;Nachname;Klasse");
         var neue = new List<G3Sus>();
@@ -47,9 +48,15 @@ public class ImportController : Controller
             var spalten = zeilen[i].Split(";");
             if (spalten.Length != 3)
             {
-                Fehler(nr, $"Drei Spalten erwartet, aber {spalten.Length} gefunden");
+                Fehler(nr, $"3 Spalten erwartet, aber {spalten.Length} gefunden");
                 continue;
             }
+
+            var vorname = spalten[0].Trim();
+            var nachname = spalten[1].Trim();
+            var klasse = spalten[2].Trim();
+
+
         }
     }
 
