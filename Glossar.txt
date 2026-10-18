@@ -124,3 +124,7 @@ PBKDF2 heisst: Es wird nicht einmal gehasht, sondern 100'000-mal (HMAC-SHA512). 
 PasswordHasher macht alles drei automatisch. Salt, Anzahl Durchläufe und Ergebnis packt er in einen Text, der ungefähr so aussieht: AQAAAAIAAYagAAAAE…
 
 Seeding heisst: beim Start der App automatisch ein paar Grunddaten in die Datenbank schreiben, die sie zum Funktionieren braucht — bevor irgendein echter Nutzer sie überhaupt benutzt.
+
+ steht für Model-View-Controller und ist ein weit verbreitetes Architekturmuster in der Softwareentwicklung.
+
+ Object-Relational Mapping (ORM) ist eine Programmiertechnik, die eine Brücke zwischen objektorientierten Programmiersprachen und relationalen Datenbanken schlägt
