@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 // 	Das MVC-Kernframework — liefert Controller, IActionResult, [HttpGet]/[HttpPost], View(), RedirectToAction() usw. Praktisch das Herzstück jedes Controllers.
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+
 // 	Der ORM (ADO-Alternative) für Datenbankzugriff — stellt Erweiterungsmethoden wie .Any(), .Include(), .ToListAsync(), .Where() auf DbSet<T> bereit
 using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
@@ -57,6 +59,21 @@ public class ImportController : Controller
             var klasse = spalten[2].Trim();
 
 
+        }
+    }
+
+    private async Task<List<string>> DateiLesen (IFormFile? datei, string kopfzeile)
+    {
+        var zeilen = new List<string>();        
+        if (datei == null || datei.Length == 0)
+        {
+            ModelState.AddModelError("", "Bitte CSV-Datei auswählen.");
+            return zeilen;
+        }
+        if (Path.GetExtension(datei.FileName).ToLower() != ".csv")
+        {
+            ModelState.AddModelError("", "Es sind nur CSV-Dateien erlaubt");
+            return zeilen;
         }
     }
 
