@@ -75,7 +75,7 @@ INHALT
                           abgeleitete Klasse)
 
 
---- Kapselung (Encapsulation) --------------------------------------------------
+--- [x]Kapselung (Encapsulation) --------------------------------------------------
 
     Daten und Methoden einer Klasse werden zu einer Einheit zusammengefasst,
     und der Zugriff auf die internen Daten wird kontrolliert.
@@ -95,7 +95,7 @@ INHALT
  3. OOP: VERERBUNG, POLYMORPHIE & ABSTRAKTION
 ================================================================================
 
---- Vererbung (Inheritance) ----------------------------------------------------
+--- [x]Vererbung (Inheritance) ----------------------------------------------------
 
     In C# kann eine Klasse Felder und Methoden von einer anderen Klasse erben.
 
@@ -103,7 +103,7 @@ INHALT
       - Abgeleitete Klasse (Kind):    die Klasse, die erbt
 
 
---- Polymorphie (Polymorphism) -------------------------------------------------
+--- [ ]Polymorphie (Polymorphism) -------------------------------------------------
 
     "Vielgestaltigkeit": Objekte oder Methoden können je nach Kontext
     unterschiedliche Formen oder Verhalten annehmen.
@@ -140,16 +140,16 @@ Dynamische Polymorphie (Runtime)
         Tier t = new Hund();
         t.MachLaut();   // "Der Hund bellt." (Entscheidung zur Laufzeit)
 
-virtual
+[x]virtual
     Markiert in der Basisklasse eine Methode, Eigenschaft oder ein Ereignis
     als überschreibbar.
 
-override
+[x]override
     Ersetzt in der abgeleiteten Klasse eine virtual- oder abstract-Methode
     der Basisklasse.
 
 
---- Abstraktion ----------------------------------------------------------------
+--- [x]Abstraktion ----------------------------------------------------------------
 
 Abstrakte Klasse (abstract class)
     Eine reine Vorlage für andere Klassen.
@@ -158,7 +158,7 @@ Abstrakte Klasse (abstract class)
       - Kann fertig implementierte UND abstrakte (unvollständige) Teile
         enthalten
 
-Abstrakte Methode
+[x]Abstrakte Methode
     Eine Methode ohne Rumpf (kein Code in {}).
       - Existiert nur in abstrakten Klassen
       - Jede erbende Klasse muss sie mit override implementieren
@@ -175,7 +175,7 @@ Abstrakte Methode
             public override double Flaeche() => Math.PI * Radius * Radius;
         }
 
-Interface (Schnittstelle)
+[x]Interface (Schnittstelle)
     Ein Vertrag oder eine Checkliste für Klassen. Es legt fest, WAS eine
     Klasse können muss, aber nicht, WIE sie es tut. Klassisch enthält es
     keinen Code, nur Signaturen.
@@ -190,12 +190,12 @@ Interface (Schnittstelle)
             public decimal Betrag() => 120.50m;
         }
 
-Implementation (Implementierung)
+[ ]Implementation (Implementierung)
     Die konkrete Umsetzung einer Idee, Spezifikation oder eines Interfaces
     in funktionierenden Code. Im Beispiel oben implementiert "Rechnung" das
     Interface "IZahlbar".
 
-Enum (Enumeration, dt. Aufzählung)
+[x]Enum (Enumeration, dt. Aufzählung)
     Ein Datentyp für eine feste Liste benannter Konstanten.
 
         enum Level
@@ -216,22 +216,22 @@ Enum (Enumeration, dt. Aufzählung)
 
 --- Datenbank ------------------------------------------------------------------
 
-ORM (Object-Relational Mapping)
+[ ]ORM (Object-Relational Mapping)
     Eine Programmiertechnik, die eine Brücke zwischen objektorientierten
     Sprachen (Klassen, Objekte) und relationalen Datenbanken (Tabellen,
     Zeilen) schlägt.
 
-EF Core (Entity Framework Core)
+[x]EF Core (Entity Framework Core)
     Microsofts ORM-Bibliothek für .NET. Sie übersetzt zwischen C#-Objekten
     und Datenbanktabellen, sodass du statt SQL ganz normalen C#-Code
     (z. B. LINQ) schreiben kannst.
 
-Migration
+[!]Migration
     Eine Bauanleitung für die Datenbank. Sie beschreibt Schritt für Schritt,
     wie die Datenbank geändert werden muss, damit sie zu deinem C#-Code
     passt.
 
-Seeding
+[ ]Seeding
     Beim Start der App automatisch Grunddaten in die Datenbank schreiben, die
     sie zum Funktionieren braucht (z. B. einen ersten Admin), bevor ein
     echter Nutzer sie benutzt.
@@ -239,7 +239,7 @@ Seeding
 
 --- Web-Architektur ------------------------------------------------------------
 
-MVC (Model-View-Controller)
+[x]MVC (Model-View-Controller)
     Ein weit verbreitetes Architekturmuster, das eine App in drei Teile
     trennt:
 
@@ -249,11 +249,11 @@ MVC (Model-View-Controller)
     View         Darstellung für den Nutzer (Razor-Seite .cshtml)
     Controller   Nimmt Anfragen an, holt Daten vom Model, wählt die View
 
-Endpoint
+[x]Endpoint
     Eine Kombination aus URL-Pfad + HTTP-Methode, die am Ende Code ausführt
     und eine Response liefert, z. B. GET /Account/Login.
 
-Controller
+[x]Controller
     In ASP.NET Core eine Klasse, die mehrere zusammengehörige Endpoints als
     Methoden gruppiert. Diese Methoden heissen Actions.
 
@@ -275,12 +275,12 @@ Controller
     Passwörter werden nie im Klartext gespeichert, sondern gesalzen und
     vielfach gehasht.
 
-Salt
+[x]Salt
     Ein Zufallswert, der vor dem Hashen dazugemischt wird. Dadurch ergibt
     dasselbe Passwort jedes Mal einen anderen Hash. Zwei Admins mit gleichem
     Passwort sehen in der Datenbank also verschieden aus.
 
-PBKDF2
+[x]PBKDF2
     Es wird nicht einmal gehasht, sondern 100'000-mal (HMAC-SHA512). Dein
     Login dauert dadurch nur ein paar Millisekunden. Ein Angreifer, der
     Milliarden Passwörter durchprobieren will, braucht aber riesig viel Zeit.
@@ -304,7 +304,7 @@ PasswordHasher
     Funktionale Programmierung ist ein deklaratives Paradigma: Man
     beschreibt, WAS herauskommen soll, nicht WIE.
 
-Programmierparadigma
+[!]Programmierparadigma
     Ein grundlegender Denkstil, wie man Programme aufbaut.
 
     Paradigma         Idee                                     Beispiele
@@ -330,20 +330,20 @@ Programmierparadigma
         // deklarativ / funktional: WAS
         var gerade = zahlen.Where(z => z % 2 == 0).ToList();
 
-Funktionale Programmierung (FP)
+[x]Funktionale Programmierung (FP)
     Programme werden aus Funktionen aufgebaut. Kernideen: reine Funktionen,
     keine Seiteneffekte, unveränderliche Daten, Funktionen als Werte.
 
-Lambda-Kalkül
+[x]Lambda-Kalkül
     Ein mathematisches Modell aus den 1930er-Jahren (Alonzo Church), das
     Berechnung nur mit Funktionen beschreibt. Theoretische Grundlage der FP
     und Namensgeber der Lambda-Ausdrücke.
 
-Funktionale Sprachen
+[!]Funktionale Sprachen
     Rein funktional: Haskell.
     Stark funktional: F#, Lisp, Clojure, Erlang, Elixir, Scala, OCaml.
 
-Multiparadigmen-Sprache
+[x]Multiparadigmen-Sprache
     Unterstützt mehrere Paradigmen gleichzeitig. C# ist objektorientiert,
     hat aber viele funktionale Elemente (Lambdas, LINQ, Records, Pattern
     Matching). Ebenso JavaScript, Python, Java, Kotlin.
@@ -357,7 +357,7 @@ Multiparadigmen-Sprache
     In der FP ist eine Funktion wie in der Mathematik gemeint: gleiche
     Eingabe ergibt immer gleiche Ausgabe.
 
-Funktion
+[x]Funktion
     Nimmt Eingabewerte (Parameter) und liefert einen Ausgabewert
     (Rückgabewert).
 
@@ -1020,3 +1020,7 @@ Refactoring
 
 
 ################################################################################
+
+
+
+eine Assembly bezeichnet eine kompilierte Code-Einheit. Sie ist das grundlegende Paket, in dem Ihr kompiliertes Programm oder Ihre Bibliothek ausgeliefert wird.
