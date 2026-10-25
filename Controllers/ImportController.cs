@@ -1,4 +1,6 @@
 using System.Globalization;
+using Humanizer;
+
 // .NET-Standardbibliothek für kultur-/sprachabhängige Formatierung — z. B. Datum, Zahlen, Gross-/Kleinschreibung je nach Land/Sprache (CultureInfo). Wird gebraucht, wenn z. B. ein Datum aus einem String geparst oder ein deutsches Zahlenformat (Komma statt Punkt) korrekt verarbeitet werden soll.
 using Microsoft.AspNetCore.Authorization;
 //Stellt [Authorize] (und verwandte Attribute wie [AllowAnonymous]) bereit
@@ -75,6 +77,28 @@ public class ImportController : Controller
             ModelState.AddModelError("", "Es sind nur CSV-Dateien erlaubt");
             return zeilen;
         }
+        using var reader = new StreamReader(datei.OpenReadStream());
+        // using sorgt dafür, dass die Datei am Ende automatisch geschlossen wird, sobald die Methode fertig ist, auch bei einem Fehler. Ohne using bleibe die Datei offen und würde unnötig Ressourcen belegen.
+        // datei.OpenReadStream(): öffnet die Datei als Stream, also als Strom von rohen Bytes, die man der Reihe nach lesen kann.
+        // StreamReader(): legt einen "Übersetzer" um diesen Stream. Rohe Bytes kann man schlecht verarbeiten. Der StreamReader macht daraus Text und bietet Methoden wie ReadLineAsync(), die eine ganze Zeile auf einmal liefern.
+        string? zeile;
+        while ((zeile = await reader.ReadLineAsync()) != null)
+        {
+            zeilen.Add(zeile);
+            if (zeile.Contains('\uFFFD'))
+            // Prüft, ob die aktuelle Zeile dieses Ersatzzeichen irgendwo enthält. Wenn ja, ist die Datei falsch kodiert.
+            {
+                Fehler(zeilen.Count, "Ungültige Zeichen. Bitte die Datei als \"CSV UTF-8\" speichern.");
+            }
+        }
+
+        if (zeilen.Count == 0 || zeilen[0].Trim() != kopfzeile)
+        {
+            Fehler(1, $"Die Kopfzeile muss '{kopfzeile}' sein.");
+            return new List<string>();
+        }
+        
+        return zeilen;
     }
 
     private void Fehler(int nr, string text)
