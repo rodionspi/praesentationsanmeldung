@@ -68,7 +68,6 @@ public class ImportController : Controller
             TextPruefen(nr, "Klasse", klasse, 20);
             
             neue.Add(new G3Sus{ Vorname = vorname, Nachname = nachname, Klasse = klasse });
-
         }
 
         if (!ModelState.IsValid)
@@ -80,8 +79,62 @@ public class ImportController : Controller
             return View("Index");
         }
 
-        await using var transaktion = await _db.Database.BeginTransactionAsync();
+        await using var transaktion = await _db.Database.BeginTransactionAsync(); // Wir öffnen den Paket.
+        try
+        {
+            _db.G3Sus.AddRange(neue); // EF Core merkt sich, dass es n neue gibt.
+            await _db.SaveChangesAsync(); // jetzt gehen 3 INSERTs an die Datenbank.
+            await transaktion.CommitAsync(); // alles dauerhaft machen.
+        }
+        catch(DbUpdateException) // Wenn beim Speichern in die Daten ein Fehler auftritt, fangen wir es hier ab.
+        {
+            await transaktion.RollbackAsync(); // Es macht alle Änderungen dieser Transaktion wieder ungeschehen.
+            ModelState.AddModelError("", "Fehler beim Speichern. Es wurde nichts importiert");
+            return View("Index");
+        }
 
+        TempData["Meldung"] = $"{neue.Count} G3Sus importiert.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> PraesentationenImportieren(IFormFile? datei)
+    {
+        var zeilen = await DateiLesen(datei, "Titel;Beschreibung;Beginn;Raum");
+        var raume = await _db.Raeume.ToListAsync();
+        var neue = new List<Praesentation>();
+
+        for (var i = 1; i < zeilen.Count; i++)
+        {
+            var nr = i + 1;
+            if (string.IsNullOrWhiteSpace(zeilen[i]))
+            {
+                continue;
+            }
+
+            var spalten = zeilen[i].Split(";");
+            if (spalten.Length != 4)
+            {
+                Fehler(nr, $"4 Spalten erwartet, aber {spalten.Length} gefunden.");
+                continue;
+            }
+
+            var titel = spalten[0].Trim();
+            var beschreibung = spalten[1].Trim();
+            var beginnText = spalten[2].Trim();
+            var raumBezeichnung = spalten[3].Trim();
+
+            TextPruefen(nr, "Titel", titel, 200);
+
+            if (beschreibung.Length > 2000)
+            {
+                Fehler(nr, "Beschreibung darf höchstens 2000 Zeichen lang sein.");
+            }
+
+            if (!DateTime.TryParseExact(beginnText, "d.M.yyyy H:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var beginn))
+            {
+                Fehler(nr, $"Beginn '{beginnText}' ist ungültig. Beispiel: 12.11.2026 08:00");
+            }
+        }
     }
 
     private async Task<List<string>> DateiLesen (IFormFile? datei, string kopfzeile)
