@@ -1,8 +1,11 @@
 using System.Globalization;
+using System.Security.Principal;
 using Humanizer;
 
 // .NET-Standardbibliothek für kultur-/sprachabhängige Formatierung — z. B. Datum, Zahlen, Gross-/Kleinschreibung je nach Land/Sprache (CultureInfo). Wird gebraucht, wenn z. B. ein Datum aus einem String geparst oder ein deutsches Zahlenformat (Komma statt Punkt) korrekt verarbeitet werden soll.
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Web;
+
 //Stellt [Authorize] (und verwandte Attribute wie [AllowAnonymous]) bereit
 using Microsoft.AspNetCore.Mvc;
 // 	Das MVC-Kernframework — liefert Controller, IActionResult, [HttpGet]/[HttpPost], View(), RedirectToAction() usw. Praktisch das Herzstück jedes Controllers.
@@ -60,8 +63,25 @@ public class ImportController : Controller
             var nachname = spalten[1].Trim();
             var klasse = spalten[2].Trim();
 
+            TextPruefen(nr, "Vorname", vorname, 100);
+            TextPruefen(nr, "Nachname", nachname, 100);
+            TextPruefen(nr, "Klasse", klasse, 20);
+            
+            neue.Add(new G3Sus{ Vorname = vorname, Nachname = nachname, Klasse = klasse });
 
         }
+
+        if (!ModelState.IsValid)
+        // Ist eine Eigenschaft mit dem Wert true oder false:
+
+        // true: Die Fehlerliste ist leer, alles in Ordnung
+        // false: Es gibt mindestens einen Fehler
+        {
+            return View("Index");
+        }
+
+        await using var transaktion = await _db.Database.BeginTransactionAsync();
+
     }
 
     private async Task<List<string>> DateiLesen (IFormFile? datei, string kopfzeile)
@@ -83,6 +103,7 @@ public class ImportController : Controller
         // StreamReader(): legt einen "Übersetzer" um diesen Stream. Rohe Bytes kann man schlecht verarbeiten. Der StreamReader macht daraus Text und bietet Methoden wie ReadLineAsync(), die eine ganze Zeile auf einmal liefern.
         string? zeile;
         while ((zeile = await reader.ReadLineAsync()) != null)
+        // await reader.ReadLineAsync(); liest eine Zeile aus 
         {
             zeilen.Add(zeile);
             if (zeile.Contains('\uFFFD'))
@@ -97,8 +118,20 @@ public class ImportController : Controller
             Fehler(1, $"Die Kopfzeile muss '{kopfzeile}' sein.");
             return new List<string>();
         }
-        
+
         return zeilen;
+    }
+
+    private void TextPruefen(int nr, string feld, string wert, int maxLength)
+    {
+        if (wert == "")
+        {
+            Fehler(nr, $"{feld} fehlt");
+        } 
+        else if (wert.Length > maxLength)
+        {
+            Fehler(nr, $"{feld} darf höchstens {maxLength} Zeichen lang sein.");
+        }
     }
 
     private void Fehler(int nr, string text)
