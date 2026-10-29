@@ -101,6 +101,8 @@ public class ImportController : Controller
     {
         var zeilen = await DateiLesen(datei, "Titel;Beschreibung;Beginn;Raum");
         var raume = await _db.Raeume.ToListAsync();
+        // _db.Raeume ist die Tabelle Raeume in der Datenbank
+        // ToListAsync() hollt alle Zeilen dieser Tabelle und lädt sie als List<Raum> in den Arbeitsspeicher
         var neue = new List<Praesentation>();
 
         for (var i = 1; i < zeilen.Count; i++)
@@ -131,9 +133,26 @@ public class ImportController : Controller
             }
 
             if (!DateTime.TryParseExact(beginnText, "d.M.yyyy H:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var beginn))
+            // Das versucht, einen Text wie "12.11.2026 08:00" in ein echtes DateTime-Objekt umzuwandeln, und meldet dabei zurück, ob es geklappt hat.
             {
                 Fehler(nr, $"Beginn '{beginnText}' ist ungültig. Beispiel: 12.11.2026 08:00");
             }
+
+            var raum = raume.FirstOrDefault((r => r.Bezeichnung == raumBezeichnung));
+            // FirstOrDefault durchsucht die Liste und gibt das erste Element zurück
+            if (raum == null)
+            {
+                Fehler(nr, "Raum {raumBezeichnung gibt es nicht.}");
+                continue;
+            }
+
+            neue.Add(new Praesentation
+            {
+                Titel = titel,
+                Beschreibung = beschreibung == "" ? null : beschreibung,
+                Beginn = beginn,
+                RaumId = raum.Id
+            });
         }
     }
 
