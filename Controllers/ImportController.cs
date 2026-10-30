@@ -138,7 +138,7 @@ public class ImportController : Controller
                 Fehler(nr, $"Beginn '{beginnText}' ist ungültig. Beispiel: 12.11.2026 08:00");
             }
 
-            var raum = raume.FirstOrDefault((r => r.Bezeichnung == raumBezeichnung));
+            var raum = raume.FirstOrDefault(r => r.Bezeichnung == raumBezeichnung);
             // FirstOrDefault durchsucht die Liste und gibt das erste Element zurück
             if (raum == null)
             {

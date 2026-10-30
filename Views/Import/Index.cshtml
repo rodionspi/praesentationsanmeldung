@@ -22,7 +22,7 @@
 
     <h2>Präsentationen</h2>
     <p>Kopfzeile: Titel;Beschreibung;Beginn;Raum</p>
-    <form action="/Import/PraesentationImportieren" enctype="multipart/form-data" method="post">
+    <form action="/Import/PraesentationenImportieren" enctype="multipart/form-data" method="post">
         @Html.AntiForgeryToken()
         <input type="file" name="datei" accept=".csv" required>
         <button type="submit">Importieren</button><#
