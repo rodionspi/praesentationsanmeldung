@@ -1,16 +1,12 @@
 using System.Globalization;
-using System.Security.Principal;
-using Humanizer;
 
 // .NET-Standardbibliothek für kultur-/sprachabhängige Formatierung — z. B. Datum, Zahlen, Gross-/Kleinschreibung je nach Land/Sprache (CultureInfo). Wird gebraucht, wenn z. B. ein Datum aus einem String geparst oder ein deutsches Zahlenformat (Komma statt Punkt) korrekt verarbeitet werden soll.
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Web;
 
 //Stellt [Authorize] (und verwandte Attribute wie [AllowAnonymous]) bereit
 using Microsoft.AspNetCore.Mvc;
 // 	Das MVC-Kernframework — liefert Controller, IActionResult, [HttpGet]/[HttpPost], View(), RedirectToAction() usw. Praktisch das Herzstück jedes Controllers.
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 // 	Der ORM (ADO-Alternative) für Datenbankzugriff — stellt Erweiterungsmethoden wie .Any(), .Include(), .ToListAsync(), .Where() auf DbSet<T> bereit
 using praesentationsanmeldung.Auth;
@@ -97,6 +93,8 @@ public class ImportController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> PraesentationenImportieren(IFormFile? datei)
     {
         var zeilen = await DateiLesen(datei, "Titel;Beschreibung;Beginn;Raum");
@@ -142,7 +140,7 @@ public class ImportController : Controller
             // FirstOrDefault durchsucht die Liste und gibt das erste Element zurück
             if (raum == null)
             {
-                Fehler(nr, "Raum {raumBezeichnung gibt es nicht.}");
+                Fehler(nr, $"Raum '{raumBezeichnung}' gibt es nicht");
                 continue;
             }
 
