@@ -1,126 +1,1026 @@
-DLL steht für Dynamic Link Library, auf Deutsch etwa dynamisch eingebundene Bibliothek. Gemeint ist eine Datei mit der Endung .dll, die fertig kompilierten Code enthält, den andere Programme benutzen können.
+################################################################################
+#                                                                              #
+#              GLOSSAR  C#  &  FUNKTIONALE PROGRAMMIERUNG                      #
+#                                                                              #
+################################################################################
 
-Eine Migration ist eine Bauanleitung für die Datenbank. Sie beschreibt Schritt für Schritt, wie die Datenbank geändert werden muss, damit sie zu deinem C#-Code passt
 
-Eigenschaft ist das deutsche Wort für Property in C#. Gemeint ist ein Wert, den ein Objekt hat, also ein Merkmal, das das Objekt beschreibt.
+INHALT
 
-Build (englisch to build, „bauen“) ist der Vorgang, bei dem aus deinem Quellcode ein lauffähiges Programm entsteht.
-
-SSMS steht für SQL Server Management Studio.
-
-Bei der Methodenüberlastung können mehrere Methoden denselben Namen mit unterschiedlichen Methoden haben Parameter:
-
-Ein Konstruktor ist eine spezielle Methode, die zur Initialisierung verwendet wird Objekte. Der Vorteil eines Konstruktors ist, dass er aufgerufen wird, wenn ein Objekt einer Klasse erstellt wird.
-
-public: Keine Zugriffsbeschränkungen. Code in jeder Assembly kann auf diesen Typ oder dieses Member zugreifen. 
-
-private: Nur Code, der in derselben class oder struct deklariert ist, kann auf dieses Member zugreifen. 
-
-protected: Nur Code im selben class oder in einem abgeleiteten class kann auf diesen Typ oder dieses Mitglied zugreifen. 
-
-internal: Nur Code in derselben Assembly kann auf diesen Typ oder auf dieses Member zugreifen.
-
-protected internal: Nur Code in derselben Assembly oder in einer abgeleiteten Klasse in einer anderen Assembly kann auf diesen Typ oder dieses Member zugreifen. 
-
-private protected: Nur Code in derselben Assembly und in derselben Klasse oder einer abgeleiteten Klasse kann auf diesen Typ oder dieses Member zugreifen
-
-Kapselung in C# bedeutet, dass Daten und Methoden einer Klasse in einer Einheit zusammengefasst und der Zugriff auf die internen Daten kontrolliert wird.
-
-Warum Kapselung?
-Bessere Kontrolle über Klassenelemente (verringert die Möglichkeit, dass du selbst (oder andere) den Code durcheinanderbringst)
-Felder können nur lesbar gemacht werden (wenn nur die get-Methode verwendet wird) oder nur schreibbar (wenn nur die set-Methode verwendet wird)
-Flexibel: Der Programmierer kann einen Teil des Codes ändern, ohne andere Teile zu beeinflussen
-Erhöhte Datensicherheit
-
-In C# ist es möglich, Felder und Methoden von einer Klasse zur anderen zu erben. Wir gruppieren das "Vererbungskonzept" in zwei Kategorien:
-
-Abgeleitete Klasse (Kind) – die Klasse, die von einer anderen Klasse erbt
-Basisklasse (Elternteil) – die Klasse, die von geerbt wird
-
-Polymorphie bedeutet in der Programmierung „Vielgestaltigkeit“ und beschreibt die Fähigkeit von Objekten oder Methoden, je nach Kontext unterschiedliche Formen oder Verhalten anzunehmen.
-
-Statische Polymorphie (Compile‑Time)
-Bei statischer Polymorphie entscheidet der Compiler bereits beim Übersetzen, welche Methode ausgeführt wird. Dies geschieht durch Methodenüberladung, also mehrere Methoden mit gleichem Namen, aber unterschiedlichen Parametern
+   1.  .NET-Grundlagen & Tools
+   2.  OOP: Klassen, Objekte & Kapselung
+   3.  OOP: Vererbung, Polymorphie & Abstraktion
+   4.  Datenbank & ASP.NET Core
+   5.  Sicherheit: Passwörter speichern
+   6.  FP: Programmierparadigmen
+   7.  FP: Funktionen
+   8.  FP: Lambdas, Delegates & Closures
+   9.  FP: Map, Filter, Reduce & LINQ
+  10.  FP: Lazy vs. Eager Evaluation
+  11.  FP: Unveränderlichkeit (Immutability)
+  12.  FP: Rekursion
+  13.  FP: Funktionen kombinieren
+  14.  FP: Ausdrücke, Pattern Matching & Datentypen
+  15.  FP: Weitere Begriffe, Vor- & Nachteile
 
 
 
-class Rechner
-{
-    public int Add(int a, int b) => a + b;
-    public double Add(double a, double b) => a + b;
-}
-var r = new Rechner();
-Console.WriteLine(r.Add(3, 4));      // ruft Add(int, int) auf
-Console.WriteLine(r.Add(3.5, 1.2));  // ruft Add(double, double) auf
+================================================================================
+ 1. .NET-GRUNDLAGEN & TOOLS
+================================================================================
+
+[ ] DLL (Dynamic Link Library)
+    Dynamisch eingebundene Bibliothek. Eine Datei mit der Endung .dll, die
+    fertig kompilierten Code enthält, den andere Programme benutzen können.
+
+[x]Build (engl. "to build" = bauen)
+    Der Vorgang, bei dem aus deinem Quellcode ein lauffähiges Programm
+    entsteht.
+
+[ ]SSMS (SQL Server Management Studio)
+    Microsofts Programm, um SQL-Server-Datenbanken zu verwalten, Tabellen
+    anzusehen und SQL-Abfragen auszuführen.
 
 
 
+================================================================================
+ 2. OOP: KLASSEN, OBJEKTE & KAPSELUNG
+================================================================================
+
+[ ]Eigenschaft (Property)
+    Ein Wert, den ein Objekt hat, also ein Merkmal, das das Objekt
+    beschreibt.
+
+[x]Konstruktor
+    Eine spezielle Methode, die ein Objekt beim Erstellen initialisiert.
+    Sie wird automatisch aufgerufen, sobald mit "new" ein Objekt der Klasse
+    erzeugt wird.
+
+[x]Methodenüberladung (Overloading)
+    Mehrere Methoden mit demselben Namen, aber unterschiedlichen Parametern
+    (Anzahl oder Typ).
+
+
+--- Zugriffsmodifizierer -------------------------------------------------------
+
+    Modifizierer          Wer darf zugreifen?
+    --------------------  -----------------------------------------------------
+    [x]public                Alle, ohne Einschränkung (Code in jeder Assembly)
+    [x]private               Nur Code in derselben Klasse bzw. demselben struct
+    [ ]protected             Dieselbe Klasse und abgeleitete Klassen
+    [ ]internal              Nur Code in derselben Assembly
+    [ ]protected internal    Dieselbe Assembly ODER abgeleitete Klassen in
+                             anderen Assemblies
+    private protected     Dieselbe Assembly UND (dieselbe Klasse oder
+                          abgeleitete Klasse)
+
+
+--- [x]Kapselung (Encapsulation) --------------------------------------------------
+
+    Daten und Methoden einer Klasse werden zu einer Einheit zusammengefasst,
+    und der Zugriff auf die internen Daten wird kontrolliert.
+
+    Warum Kapselung?
+      - Bessere Kontrolle über die Klassenelemente: du (oder andere) bringst
+        den Code weniger leicht durcheinander
+      - Felder können nur lesbar (nur get) oder nur schreibbar (nur set)
+        gemacht werden
+      - Flexibel: Ein Teil des Codes kann geändert werden, ohne andere Teile
+        zu beeinflussen
+      - Erhöhte Datensicherheit
+
+
+
+================================================================================
+ 3. OOP: VERERBUNG, POLYMORPHIE & ABSTRAKTION
+================================================================================
+
+--- [x]Vererbung (Inheritance) ----------------------------------------------------
+
+    In C# kann eine Klasse Felder und Methoden von einer anderen Klasse erben.
+
+      - Basisklasse (Elternklasse):   die Klasse, von der geerbt wird
+      - Abgeleitete Klasse (Kind):    die Klasse, die erbt
+
+
+--- [ ]Polymorphie (Polymorphism) -------------------------------------------------
+
+    "Vielgestaltigkeit": Objekte oder Methoden können je nach Kontext
+    unterschiedliche Formen oder Verhalten annehmen.
+
+Statische Polymorphie (Compile-Time)
+    Der Compiler entscheidet schon beim Übersetzen, welche Methode
+    ausgeführt wird. Das geschieht durch Methodenüberladung.
+
+        class Rechner
+        {
+            public int Add(int a, int b) => a + b;
+            public double Add(double a, double b) => a + b;
+        }
+
+        var r = new Rechner();
+        Console.WriteLine(r.Add(3, 4));      // ruft Add(int, int) auf
+        Console.WriteLine(r.Add(3.5, 1.2));  // ruft Add(double, double) auf
 
 Dynamische Polymorphie (Runtime)
-Dynamische Polymorphie tritt auf, wenn eine abgeleitete Klasse eine Methode der Basisklasse überschreibt. Welche Methode ausgeführt wird, entscheidet sich erst zur Laufzeit anhand des tatsächlichen Objekttyps
+    Eine abgeleitete Klasse überschreibt eine Methode der Basisklasse.
+    Welche Methode läuft, entscheidet sich erst zur Laufzeit anhand des
+    tatsächlichen Objekttyps.
+
+        class Tier
+        {
+            public virtual void MachLaut() => Console.WriteLine("Ein Tier macht einen Laut.");
+        }
+
+        class Hund : Tier
+        {
+            public override void MachLaut() => Console.WriteLine("Der Hund bellt.");
+        }
+
+        Tier t = new Hund();
+        t.MachLaut();   // "Der Hund bellt." (Entscheidung zur Laufzeit)
+
+[x]virtual
+    Markiert in der Basisklasse eine Methode, Eigenschaft oder ein Ereignis
+    als überschreibbar.
+
+[x]override
+    Ersetzt in der abgeleiteten Klasse eine virtual- oder abstract-Methode
+    der Basisklasse.
+
+
+--- [x]Abstraktion ----------------------------------------------------------------
+
+Abstrakte Klasse (abstract class)
+    Eine reine Vorlage für andere Klassen.
+      - Keine Instanziierung: new Tier() ist nicht erlaubt, wenn Tier
+        abstrakt ist
+      - Kann fertig implementierte UND abstrakte (unvollständige) Teile
+        enthalten
+
+[x]Abstrakte Methode
+    Eine Methode ohne Rumpf (kein Code in {}).
+      - Existiert nur in abstrakten Klassen
+      - Jede erbende Klasse muss sie mit override implementieren
+
+        abstract class Form
+        {
+            public abstract double Flaeche();          // kein Rumpf
+            public void Info() => Console.WriteLine($"Fläche: {Flaeche()}");
+        }
+
+        class Kreis : Form
+        {
+            public double Radius { get; init; }
+            public override double Flaeche() => Math.PI * Radius * Radius;
+        }
+
+[x]Interface (Schnittstelle)
+    Ein Vertrag oder eine Checkliste für Klassen. Es legt fest, WAS eine
+    Klasse können muss, aber nicht, WIE sie es tut. Klassisch enthält es
+    keinen Code, nur Signaturen.
+
+        interface IZahlbar
+        {
+            decimal Betrag();
+        }
+
+        class Rechnung : IZahlbar
+        {
+            public decimal Betrag() => 120.50m;
+        }
+
+[ ]Implementation (Implementierung)
+    Die konkrete Umsetzung einer Idee, Spezifikation oder eines Interfaces
+    in funktionierenden Code. Im Beispiel oben implementiert "Rechnung" das
+    Interface "IZahlbar".
+
+[x]Enum (Enumeration, dt. Aufzählung)
+    Ein Datentyp für eine feste Liste benannter Konstanten.
+
+        enum Level
+        {
+            Low,
+            Medium,
+            High
+        }
+
+        Level myVar = Level.Medium;
+        Console.WriteLine(myVar);   // Medium
 
 
 
-class Tier
-{
-    public virtual void MachLaut() => Console.WriteLine("Ein Tier macht einen Laut.");
-}
+================================================================================
+ 4. DATENBANK & ASP.NET CORE
+================================================================================
 
-class Hund : Tier
-{
-    public override void MachLaut() => Console.WriteLine("Der Hund bellt.");
-}
-Tier t = new Hund();
-t.MachLaut();   // Ausgabe: "Der Hund bellt." (Laufzeitentscheidung)
+--- Datenbank ------------------------------------------------------------------
 
-Was virtual bedeutet
-Mit virtual kennzeichnet eine Basisklasse eine Methode, Eigenschaft oder ein Ereignis als überschreibbar.
+[ ]ORM (Object-Relational Mapping)
+    Eine Programmiertechnik, die eine Brücke zwischen objektorientierten
+    Sprachen (Klassen, Objekte) und relationalen Datenbanken (Tabellen,
+    Zeilen) schlägt.
 
-Was override bedeutet
-override wird in einer abgeleiteten Klasse verwendet, um eine virtual (oder abstract) Methode der Basisklasse zu ersetzen.
+[x]EF Core (Entity Framework Core)
+    Microsofts ORM-Bibliothek für .NET. Sie übersetzt zwischen C#-Objekten
+    und Datenbanktabellen, sodass du statt SQL ganz normalen C#-Code
+    (z. B. LINQ) schreiben kannst.
+
+[!]Migration
+    Eine Bauanleitung für die Datenbank. Sie beschreibt Schritt für Schritt,
+    wie die Datenbank geändert werden muss, damit sie zu deinem C#-Code
+    passt.
+
+[ ]Seeding
+    Beim Start der App automatisch Grunddaten in die Datenbank schreiben, die
+    sie zum Funktionieren braucht (z. B. einen ersten Admin), bevor ein
+    echter Nutzer sie benutzt.
 
 
-Was ist eine abstrakte Klasse?
-Eine abstrakte Klasse (gekennzeichnet durch das Schlüsselwort abstract) dient als reine Vorlage für andere Klassen.
-Keine Instanziierung: Sie können kein Objekt direkt von einer abstrakten Klasse erstellen (z. B. new Tier() ist nicht erlaubt).
-Gemeinsamer Code: Sie kann sowohl fertig implementierte Methoden und Eigenschaften als auch unvollständige (abstrakte) Teile enthalten.
+--- Web-Architektur ------------------------------------------------------------
 
-Was ist eine abstrakte Methode?
-Eine abstrakte Methode ist eine Methode ohne Rumpf (sie hat keinen Code-Inhalt in geschweiften Klammern {}).
-Sie existiert nur in abstrakten Klassen.
-Zwang zur Implementierung: Jede Klasse, die von der abstrakten Klasse erbt, muss diese Methode zwingend mit dem Schlüsselwort override mit Leben füllen.
+[x]MVC (Model-View-Controller)
+    Ein weit verbreitetes Architekturmuster, das eine App in drei Teile
+    trennt:
 
-Ein Interface (Schnittstelle) in C# ist wie ein Vertrag oder eine Checkliste für Klassen.Es definiert nur, was eine Klasse tun können muss, aber absolut nicht, wie sie es tut. Ein Interface enthält standardmäßig keinerlei Code – keine Variablen, keine fertigen Methoden und keinen Programmiercode.
+    Teil         Aufgabe
+    -----------  ---------------------------------------------------------
+    Model        Daten und Geschäftslogik (z. B. Admin, Praesentation)
+    View         Darstellung für den Nutzer (Razor-Seite .cshtml)
+    Controller   Nimmt Anfragen an, holt Daten vom Model, wählt die View
 
-Die Implementation (oft auch Implementierung genannt) ist der konkrete Prozess oder das Ergebnis des Umsetzens einer Idee, eines Plans, einer Spezifikation oder eines Konzepts in die Realität – oder in der Informatik: in funktionierenden Programmcode.
+[x]Endpoint
+    Eine Kombination aus URL-Pfad + HTTP-Methode, die am Ende Code ausführt
+    und eine Response liefert, z. B. GET /Account/Login.
 
-Ein Enum (steht kurz für Enumeration, auf Deutsch: Aufzählung) ist in C# ein spezieller Datentyp, mit dem du eine Liste von benannten Konstanten erstellen kannst.
+[x]Controller
+    In ASP.NET Core eine Klasse, die mehrere zusammengehörige Endpoints als
+    Methoden gruppiert. Diese Methoden heissen Actions.
 
-class Program
-{
-  enum Level
-  {
-    Low,
-    Medium,
-    High
-  }
-  static void Main(string[] args)
-  {
-    Level myVar = Level.Medium;
-    Console.WriteLine(myVar);
-  }
-}
+        public class AccountController : Controller
+        {
+            [HttpGet]
+            public IActionResult Login() => View();      // GET /Account/Login
 
-EF Core (Entity Framework Core) ist eine ORM-Bibliothek (Object-Relational Mapper) von Microsoft für .NET. Sie übersetzt zwischen zwei Welten, die normalerweise nicht zusammenpassen
+            [HttpPost]
+            public IActionResult Logout() => RedirectToAction("Login");   // POST /Account/Logout
+        }
 
-Ein Endpoint ist ganz allgemein: eine Kombination aus URL-Pfad + HTTP-Methode, die am Ende tatsächlich Code ausführt und eine Response liefert.
 
-Ein Controller ist in ASP.NET Core eine Klasse, die mehrere zusammengehörige Endpoints als Methoden gruppiert — genannt Actions.
 
-Salt ist ein Zufallswert, der vor dem Hashen dazugemischt wird. Deshalb ergibt dasselbe Passwort jedes Mal einen anderen Hash. Zwei Admins mit gleichem Passwort sehen in der Datenbank also verschieden aus.
+================================================================================
+ 5. SICHERHEIT: PASSWÖRTER SPEICHERN
+================================================================================
 
-PBKDF2 heisst: Es wird nicht einmal gehasht, sondern 100'000-mal (HMAC-SHA512). Dein Login dauert dadurch nur ein paar Millisekunden. Ein Angreifer, der Milliarden Passwörter durchprobieren will, braucht dafür aber riesig viel Zeit.
+    Passwörter werden nie im Klartext gespeichert, sondern gesalzen und
+    vielfach gehasht.
 
-PasswordHasher macht alles drei automatisch. Salt, Anzahl Durchläufe und Ergebnis packt er in einen Text, der ungefähr so aussieht: AQAAAAIAAYagAAAAE…
+[x]Salt
+    Ein Zufallswert, der vor dem Hashen dazugemischt wird. Dadurch ergibt
+    dasselbe Passwort jedes Mal einen anderen Hash. Zwei Admins mit gleichem
+    Passwort sehen in der Datenbank also verschieden aus.
 
-Seeding heisst: beim Start der App automatisch ein paar Grunddaten in die Datenbank schreiben, die sie zum Funktionieren braucht — bevor irgendein echter Nutzer sie überhaupt benutzt.
+[x]PBKDF2
+    Es wird nicht einmal gehasht, sondern 100'000-mal (HMAC-SHA512). Dein
+    Login dauert dadurch nur ein paar Millisekunden. Ein Angreifer, der
+    Milliarden Passwörter durchprobieren will, braucht aber riesig viel Zeit.
+
+PasswordHasher
+    Erledigt alles automatisch: Salt erzeugen, PBKDF2 ausführen und Salt,
+    Anzahl Durchläufe und Ergebnis in einen Text packen, der ungefähr so
+    aussieht: AQAAAAIAAYagAAAAE...
+
+        admin.PasswortHash = hasher.HashPassword(admin, "MeinPasswort");
+
+        var ok = hasher.VerifyHashedPassword(admin, admin.PasswortHash, eingabe)
+                 == PasswordVerificationResult.Success;
+
+
+
+================================================================================
+ 6. FP: PROGRAMMIERPARADIGMEN
+================================================================================
+
+    Funktionale Programmierung ist ein deklaratives Paradigma: Man
+    beschreibt, WAS herauskommen soll, nicht WIE.
+
+[!]Programmierparadigma
+    Ein grundlegender Denkstil, wie man Programme aufbaut.
+
+    Paradigma         Idee                                     Beispiele
+    ----------------  ---------------------------------------  ---------------
+    Imperativ         Schritt-für-Schritt-Befehle, die den     C, C# mit
+                      Zustand verändern (WIE)                  Schleifen
+    Prozedural        Imperativ, aufgeteilt in Prozeduren      C, Pascal
+    Objektorientiert  Objekte kapseln Daten + Verhalten,       C#, Java
+                      Zustand wird verändert
+    Deklarativ        Beschreibt das Ergebnis, nicht den Weg   SQL, LINQ, HTML
+                      (WAS)
+    Funktional        Programme aus reinen Funktionen,         Haskell, F#,
+                      unveränderliche Daten                    LINQ
+
+        // imperativ: WIE
+        var gerade = new List<int>();
+        foreach (var z in zahlen)
+        {
+            if (z % 2 == 0)
+                gerade.Add(z);
+        }
+
+        // deklarativ / funktional: WAS
+        var gerade = zahlen.Where(z => z % 2 == 0).ToList();
+
+[x]Funktionale Programmierung (FP)
+    Programme werden aus Funktionen aufgebaut. Kernideen: reine Funktionen,
+    keine Seiteneffekte, unveränderliche Daten, Funktionen als Werte.
+
+[x]Lambda-Kalkül
+    Ein mathematisches Modell aus den 1930er-Jahren (Alonzo Church), das
+    Berechnung nur mit Funktionen beschreibt. Theoretische Grundlage der FP
+    und Namensgeber der Lambda-Ausdrücke.
+
+[!]Funktionale Sprachen
+    Rein funktional: Haskell.
+    Stark funktional: F#, Lisp, Clojure, Erlang, Elixir, Scala, OCaml.
+
+[x]Multiparadigmen-Sprache
+    Unterstützt mehrere Paradigmen gleichzeitig. C# ist objektorientiert,
+    hat aber viele funktionale Elemente (Lambdas, LINQ, Records, Pattern
+    Matching). Ebenso JavaScript, Python, Java, Kotlin.
+
+
+
+================================================================================
+ 7. FP: FUNKTIONEN
+================================================================================
+
+    In der FP ist eine Funktion wie in der Mathematik gemeint: gleiche
+    Eingabe ergibt immer gleiche Ausgabe.
+
+[x]Funktion
+    Nimmt Eingabewerte (Parameter) und liefert einen Ausgabewert
+    (Rückgabewert).
+
+
+--- Reine Funktion (Pure Function) ---------------------------------------------
+
+    Eine reine Funktion erfüllt zwei Bedingungen:
+      1. Deterministisch:      gleiche Eingabe ergibt immer die gleiche Ausgabe
+      2. Keine Seiteneffekte:  sie verändert nichts ausserhalb von sich selbst
+
+        // rein
+        int Quadrat(int x) => x * x;
+
+        // NICHT rein: Ergebnis hängt von etwas ausserhalb ab
+        int Plus(int x) => x + zaehler;
+
+        // NICHT rein: hat einen Seiteneffekt (Konsolenausgabe)
+        int Doppelt(int x)
+        {
+            Console.WriteLine("rechne...");
+            return x * 2;
+        }
+
+    Vorteile reiner Funktionen:
+      - Einfach zu testen und zu verstehen
+      - Kein versteckter Zustand
+      - Problemlos parallel ausführbar
+      - Ergebnisse können zwischengespeichert werden (Memoization)
+
+Seiteneffekt (Side Effect)
+    Jede Wirkung einer Funktion, die über das Zurückgeben eines Wertes
+    hinausgeht. Beispiele:
+      - Globale Variable oder Feld ändern
+      - Einen Parameter (z. B. eine Liste) verändern
+      - Auf die Konsole schreiben, Datei lesen/schreiben
+      - Datenbank- oder Netzwerkzugriff
+      - DateTime.Now oder Random benutzen
+    Seiteneffekte lassen sich nicht ganz vermeiden. In der FP schiebt man sie
+    an den Rand des Programms und hält den Kern rein.
+
+Deterministisch
+    Bei gleicher Eingabe kommt immer dasselbe heraus. Math.Max(3, 5) ist
+    deterministisch, DateTime.Now nicht.
+
+Referenzielle Transparenz
+    Ein Funktionsaufruf kann durch sein Ergebnis ersetzt werden, ohne dass
+    sich das Programm anders verhält. Quadrat(4) kann überall durch 16
+    ersetzt werden. Gilt nur für reine Funktionen.
+
+
+--- Funktionen als Werte -------------------------------------------------------
+
+First-Class Functions
+    Funktionen sind normale Werte: Man kann sie in Variablen speichern, als
+    Parameter übergeben und zurückgeben.
+
+        Func<int, int> quadrat = x => x * x;   // Funktion in Variable
+        int ergebnis = quadrat(5);             // 25
+
+Higher-Order Function (Funktion höherer Ordnung)
+    Nimmt mindestens eine Funktion als Parameter ODER gibt eine Funktion
+    zurück. Beispiele in C#: Where, Select, Aggregate, OrderBy.
+
+        // nimmt eine Funktion als Parameter
+        int Anwenden(Func<int, int> f, int x) => f(x);
+        Anwenden(x => x + 1, 5);   // 6
+
+        // gibt eine Funktion zurück
+        Func<int, int> Multiplikator(int faktor) => x => x * faktor;
+        var mal3 = Multiplikator(3);
+        mal3(10);   // 30
+
+Stelligkeit (Arity)
+    Die Anzahl Parameter einer Funktion. Ein Parameter = einstellig (unär),
+    zwei = zweistellig (binär).
+
+Identitätsfunktion
+    Gibt ihren Eingabewert unverändert zurück: x => x. Nützlich als
+    Standardwert oder Platzhalter.
+
+
+
+================================================================================
+ 8. FP: LAMBDAS, DELEGATES & CLOSURES
+================================================================================
+
+Lambda-Ausdruck
+    Eine anonyme Funktion, die man direkt dort schreibt, wo man sie braucht.
+    Der Operator => heisst Lambda-Operator ("geht über zu").
+
+        x => x * 2                     // ein Parameter
+        (a, b) => a + b                // zwei Parameter
+        () => Console.WriteLine("Hi")  // kein Parameter
+        x =>                           // mit Block-Körper
+        {
+            var y = x * 2;
+            return y + 1;
+        }
+
+Anonyme Funktion
+    Eine Funktion ohne Namen. In C# sind das Lambdas und die ältere
+    Schreibweise: delegate (int x) { return x * 2; }
+
+Delegate
+    Ein Typ, der einen Verweis auf eine Methode speichert ("typsicherer
+    Funktionszeiger"). Er legt fest, welche Parameter und welchen
+    Rückgabetyp die Methode haben muss.
+
+        delegate int Rechenoperation(int a, int b);
+
+        Rechenoperation plus = (a, b) => a + b;
+        plus(2, 3);   // 5
+
+
+--- Vordefinierte Delegates ----------------------------------------------------
+
+    Delegate             Rückgabe              Wofür
+    -------------------  --------------------  --------------------------------
+    Func<..., TResult>   ja (letzter Typ)      Berechnungen
+    Action<...>          nein (void)           Seiteneffekte, z. B. Ausgabe
+    Predicate<T>         bool                  Bedingungen prüfen
+
+        Func<int> f0 = () => 42;                     // keine Parameter, gibt int zurück
+        Func<int, string> f1 = x => x.ToString();    // int rein, string raus
+        Func<int, int, int> f2 = (a, b) => a + b;    // zwei int rein, int raus
+
+        Action<string> ausgeben = text => Console.WriteLine(text);
+        Predicate<int> istGerade = x => x % 2 == 0;
+
+
+--- Closure --------------------------------------------------------------------
+
+Closure (Funktionsabschluss)
+    Eine Funktion, die sich Variablen aus ihrer Umgebung merkt, auch nachdem
+    diese Umgebung schon verlassen wurde.
+
+        Func<int> ZaehlerErstellen()
+        {
+            int zaehler = 0;
+            return () => ++zaehler;   // merkt sich "zaehler"
+        }
+
+        var naechste = ZaehlerErstellen();
+        naechste();   // 1
+        naechste();   // 2
+
+    Achtung: Diese Closure verändert eine Variable und ist darum NICHT rein.
+    Funktional sauber ist eine Closure nur, wenn sie die gemerkten Werte nur
+    liest.
+
+
+--- Hilfsmittel in C# ----------------------------------------------------------
+
+Expression-bodied Member
+    Eine Methode oder Property, die mit => statt mit { return ...; }
+    geschrieben wird.
+
+        public int Quadrat(int x) => x * x;
+        public string VollerName => $"{Vorname} {Nachname}";
+
+Extension Method (Erweiterungsmethode)
+    Eine statische Methode, die man aufruft, als gehöre sie zu einem
+    bestehenden Typ. Der erste Parameter wird mit "this" markiert. Alle
+    LINQ-Methoden sind Extension Methods auf IEnumerable<T>.
+
+        public static class IntErweiterungen
+        {
+            public static bool IstGerade(this int x) => x % 2 == 0;
+        }
+
+        4.IstGerade();   // true
+
+Generics
+    Code, der mit beliebigen Typen funktioniert, z. B. List<T> oder
+    Func<T, TResult>. T ist ein Platzhalter für einen Typ, der erst bei der
+    Verwendung festgelegt wird.
+
+
+
+================================================================================
+ 9. FP: MAP, FILTER, REDUCE & LINQ
+================================================================================
+
+    Map, Filter und Reduce sind die drei wichtigsten Higher-Order Functions
+    für Listen. In C# heissen sie Select, Where und Aggregate.
+
+    Begriff         C# (LINQ)    Was passiert                     Anzahl
+    --------------  -----------  -------------------------------  ------------
+    Map             Select       Jedes Element umwandeln          bleibt gleich
+    Filter          Where        Nur Elemente behalten, die eine  wird kleiner
+                                 Bedingung erfüllen               oder bleibt
+    Reduce / Fold   Aggregate    Alles zu einem Wert              wird 1 Wert
+                                 zusammenfassen
+    FlatMap         SelectMany   Liste von Listen zu einer        beliebig
+                                 Liste abflachen
+
+        var zahlen = new List<int> { 1, 2, 3, 4 };
+
+        // Map
+        var quadrate = zahlen.Select(x => x * x);            // 1, 4, 9, 16
+
+        // Filter
+        var gerade = zahlen.Where(x => x % 2 == 0);          // 2, 4
+
+        // Reduce: Startwert (Akkumulator) 0
+        var summe = zahlen.Aggregate(0, (acc, x) => acc + x); // 10
+        // Schritte: 0+1=1, 1+2=3, 3+3=6, 6+4=10
+
+        // FlatMap
+        var klassen = new List<List<string>> { new() { "Anna", "Ben" }, new() { "Cem" } };
+        var alle = klassen.SelectMany(k => k);               // Anna, Ben, Cem
+
+Akkumulator (Seed)
+    Der Startwert bei Reduce, in dem das Zwischenergebnis Schritt für Schritt
+    gesammelt wird. Spezialfälle von Reduce: Sum(), Count(), Min(), Max(),
+    Average().
+
+
+--- LINQ -----------------------------------------------------------------------
+
+LINQ (Language Integrated Query)
+    Eine in C# eingebaute Abfragesprache für Datenmengen (Listen, Arrays,
+    Datenbanken über EF Core, XML). LINQ ist der funktionale Teil von C#.
+
+    Methode                                Funktion
+    -------------------------------------  -----------------------------------
+    Select                                 umwandeln (Map)
+    Where                                  auswählen (Filter)
+    Aggregate                              zusammenfassen (Reduce)
+    SelectMany                             abflachen (FlatMap)
+    OrderBy / OrderByDescending / ThenBy   sortieren
+    GroupBy                                gruppieren
+    Any / All                              mindestens eines / alle erfüllen
+                                           eine Bedingung
+    First / FirstOrDefault / Single        einzelnes Element holen
+    Take / Skip                            erste n nehmen / überspringen
+    Distinct                               Duplikate entfernen
+    Zip                                    zwei Listen paarweise verbinden
+    ToList / ToArray                       Ergebnis sofort berechnen und
+                                           speichern
+
+Methodensyntax vs. Abfragesyntax
+    Beide machen genau dasselbe. Der Compiler übersetzt die Abfragesyntax in
+    Methodensyntax.
+
+        // Methodensyntax (häufiger)
+        var namen = personen.Where(p => p.Alter >= 18)
+                            .OrderBy(p => p.Name)
+                            .Select(p => p.Name);
+
+        // Abfragesyntax (sieht aus wie SQL)
+        var namen = from p in personen
+                    where p.Alter >= 18
+                    orderby p.Name
+                    select p.Name;
+
+Method Chaining (Methodenverkettung)
+    Mehrere Methodenaufrufe direkt hintereinander, wobei jeder auf dem
+    Ergebnis des vorherigen arbeitet (siehe oben).
+
+Pipeline
+    Eine Kette von Verarbeitungsschritten, bei der die Ausgabe eines Schritts
+    die Eingabe des nächsten ist:
+    Daten -> filtern -> umwandeln -> sortieren -> Ergebnis
+
+
+
+================================================================================
+ 10. FP: LAZY VS. EAGER EVALUATION
+================================================================================
+
+    LINQ rechnet meistens erst, wenn das Ergebnis wirklich gebraucht wird
+    (lazy). Mit ToList() erzwingt man die sofortige Berechnung (eager).
+
+                      Lazy (verzögert)                Eager (sofort)
+    ----------------  ------------------------------  -------------------------
+    Wann gerechnet?   Erst beim Durchlaufen           Sofort
+                      (foreach, ToList)
+    In LINQ           Where, Select, OrderBy ...      ToList, ToArray, Count,
+                                                      Sum, First
+    Vorteil           Nur was gebraucht wird;         Ergebnis fix, nur einmal
+                      unendliche Folgen möglich       berechnet
+    Nachteil          Mehrfaches Durchlaufen =        Berechnet evtl.
+                      mehrfach rechnen                Unnötiges
+
+Lazy Evaluation (faule Auswertung)
+    Ein Ausdruck wird erst berechnet, wenn sein Ergebnis gebraucht wird. In
+    LINQ heisst das Deferred Execution (verzögerte Ausführung).
+
+        var zahlen = new List<int> { 1, 2, 3 };
+        var gross = zahlen.Where(x => x > 1);   // hier wird NOCH NICHTS berechnet
+        zahlen.Add(10);
+
+        foreach (var z in gross)                // erst JETZT wird gefiltert
+            Console.WriteLine(z);               // 2, 3, 10  (die 10 ist dabei!)
+
+Eager Evaluation (sofortige Auswertung)
+    Ein Ausdruck wird sofort berechnet.
+
+        var gross = zahlen.Where(x => x > 1).ToList();   // sofort berechnet
+
+IEnumerable<T>
+    Das Interface für alles, was man der Reihe nach durchlaufen kann (mit
+    foreach). LINQ-Methoden arbeiten darauf und sind meistens lazy.
+
+yield return
+    Erzeugt eine lazy Folge: Jedes Element wird erst berechnet, wenn es
+    abgefragt wird.
+
+        IEnumerable<int> NatuerlicheZahlen()
+        {
+            int i = 1;
+            while (true)
+                yield return i++;   // unendliche Folge, trotzdem kein Absturz
+        }
+
+        var ersteFuenf = NatuerlicheZahlen().Take(5);   // 1, 2, 3, 4, 5
+
+
+
+================================================================================
+ 11. FP: UNVERÄNDERLICHKEIT (IMMUTABILITY)
+================================================================================
+
+    Ein unveränderliches Objekt wird nach dem Erstellen nie mehr geändert.
+    Statt etwas zu ändern, erzeugt man eine neue, veränderte Kopie.
+
+Immutable (unveränderlich)
+    Kann nach dem Erstellen nicht geändert werden.
+
+Mutable (veränderlich)
+    Das Gegenteil, z. B. List<T> oder normale Klassen mit set.
+
+    Vorteile von Immutability:
+      - Keine unerwarteten Änderungen von anderer Stelle
+      - Thread-sicher ohne Locks
+      - Einfacher zu verstehen und zu debuggen
+      - Alte Versionen bleiben erhalten
+
+Zustand (State)
+    Alle Daten, die ein Programm zu einem Zeitpunkt im Speicher hat. FP
+    vermeidet veränderlichen Zustand, besonders geteilten veränderlichen
+    Zustand (Shared Mutable State), die häufigste Fehlerquelle.
+
+
+--- Werkzeuge in C# ------------------------------------------------------------
+
+    Werkzeug           Bedeutung
+    -----------------  ---------------------------------------------------------
+    const              Wert steht schon beim Kompilieren fest
+                         const double Pi = 3.14159;
+    readonly           Nur bei der Deklaration oder im Konstruktor setzbar
+                         private readonly AppDbContext _db;
+    init               Property nur beim Erstellen des Objekts setzbar
+                         public string Name { get; init; }
+    record             Typ für unveränderliche Daten mit Wertvergleich
+                         public record Person(string Name, int Alter);
+    with               Kopie eines Records mit geänderten Werten
+                         var p2 = p1 with { Alter = 19 };
+    ImmutableList<T>   Liste, deren Add eine neue Liste zurückgibt
+                         var l2 = l1.Add(4);
+
+        public class Person
+        {
+            public string Name { get; init; }
+        }
+
+        var p = new Person { Name = "Rodion" };
+        p.Name = "Anna";   // Fehler beim Kompilieren
+
+Record (ab C# 9)
+    Ein Typ für unveränderliche Daten. Records vergleichen nach Wert und
+    haben automatisch ToString(), Equals() und GetHashCode().
+
+        public record Person(string Name, int Alter);
+
+        var a = new Person("Rodion", 18);
+        var b = new Person("Rodion", 18);
+        Console.WriteLine(a == b);         // true (Wertvergleich)
+
+        var aelter = a with { Alter = 19 }; // Kopie mit neuem Alter
+        // a.Alter ist immer noch 18
+
+Wertgleichheit (Value Equality)
+    Zwei Objekte sind gleich, wenn ihre Inhalte gleich sind (Records, struct,
+    string).
+
+Referenzgleichheit (Reference Equality)
+    Zwei Objekte sind nur gleich, wenn es dasselbe Objekt im Speicher ist
+    (normale Klassen).
+
+string ist immutable
+    Jede "Änderung" (ToUpper(), Replace(), +) erzeugt einen neuen String,
+    das Original bleibt gleich.
+
+Immutable Collections (System.Collections.Immutable)
+    Listen, die nie verändert werden.
+
+        var liste1 = ImmutableList.Create(1, 2, 3);
+        var liste2 = liste1.Add(4);   // liste1: 1,2,3   liste2: 1,2,3,4
+
+IReadOnlyList<T>
+    Nur eine schreibgeschützte SICHT auf eine Liste. Der Aufrufer kann nichts
+    ändern, die Original-Liste dahinter aber schon. Also nicht echt
+    immutable.
+
+
+
+================================================================================
+ 12. FP: REKURSION
+================================================================================
+
+    Eine rekursive Funktion ruft sich selbst auf. In der FP ersetzt Rekursion
+    oft Schleifen, weil Schleifen eine Zählvariable verändern.
+
+    Jede Rekursion braucht zwei Teile:
+      1. Basisfall (Abbruchbedingung):  der einfachste Fall, der direkt ein
+                                        Ergebnis liefert
+      2. Rekursionsschritt:             die Funktion ruft sich mit einem
+                                        kleineren Problem selbst auf
+
+        int Fakultaet(int n)
+        {
+            if (n <= 1) return 1;            // Basisfall
+            return n * Fakultaet(n - 1);     // Rekursionsschritt
+        }
+
+        // Fakultaet(4) = 4 * 3 * 2 * 1 = 24
+
+    Fehlt der Basisfall oder wird er nie erreicht, ruft sich die Funktion
+    endlos auf, bis der Speicher voll ist.
+
+Call Stack (Aufrufstapel)
+    Speichert für jeden laufenden Funktionsaufruf dessen Daten. Bei jeder
+    Rekursion kommt ein Eintrag dazu.
+
+StackOverflowException
+    Entsteht, wenn der Call Stack voll ist, meist durch zu tiefe oder endlose
+    Rekursion. In C# kann man sie nicht abfangen, das Programm stürzt ab.
+
+Endrekursion (Tail Recursion)
+    Der rekursive Aufruf ist die allerletzte Operation der Funktion. F# oder
+    Haskell optimieren das, sodass der Stack nicht wächst (Tail Call
+    Optimization). C# garantiert diese Optimierung NICHT.
+
+        int FakultaetEnd(int n, int acc = 1)
+        {
+            if (n <= 1) return acc;
+            return FakultaetEnd(n - 1, n * acc);   // letzter Schritt = der Aufruf
+        }
+
+Iteration
+    Das Wiederholen mit einer Schleife. Jede Rekursion lässt sich als
+    Iteration schreiben und umgekehrt.
+
+
+
+================================================================================
+ 13. FP: FUNKTIONEN KOMBINIEREN
+================================================================================
+
+    Kleine Funktionen werden zu grösseren zusammengesetzt, statt eine grosse
+    Funktion zu schreiben.
+
+Funktionskomposition (Function Composition)
+    Zwei oder mehr Funktionen zu einer neuen verbinden: Die Ausgabe der einen
+    ist die Eingabe der nächsten. Mathematisch: (f o g)(x) = f(g(x)).
+
+        Func<int, int> doppelt  = x => x * 2;
+        Func<int, int> plusEins = x => x + 1;
+        Func<int, int> doppeltDannPlusEins = x => plusEins(doppelt(x));
+        doppeltDannPlusEins(5);   // 11
+
+        // allgemeine Compose-Funktion
+        static Func<A, C> Compose<A, B, C>(Func<A, B> f, Func<B, C> g) => x => g(f(x));
+        var kombiniert = Compose(doppelt, plusEins);
+        kombiniert(5);   // 11
+
+Currying
+    Wandelt eine Funktion mit mehreren Parametern in eine Kette von
+    Funktionen mit je einem Parameter um. Benannt nach Haskell Curry.
+
+        Func<int, int, int> addNormal = (a, b) => a + b;
+        Func<int, Func<int, int>> addCurry = a => b => a + b;
+
+        addNormal(2, 3);   // 5
+        addCurry(2)(3);    // 5
+
+Partielle Anwendung (Partial Application)
+    Eine Funktion wird nur mit einem Teil ihrer Parameter aufgerufen und gibt
+    eine neue Funktion zurück, die auf den Rest wartet.
+
+        var plusZehn = addCurry(10);   // ein Parameter ist schon fest
+        plusZehn(5);   // 15
+        plusZehn(7);   // 17
+
+    Unterschied:
+      Currying             = die Umwandlung der Funktion
+      Partielle Anwendung  = das Benutzen mit nur einem Teil der Argumente
+
+Memoization
+    Die Ergebnisse einer reinen Funktion werden zwischengespeichert. Bei
+    einem erneuten Aufruf mit denselben Argumenten wird das gespeicherte
+    Ergebnis zurückgegeben. Funktioniert nur bei reinen Funktionen sicher.
+
+        var cache = new Dictionary<int, long>();
+
+        long Fib(int n)
+        {
+            if (n <= 1) return n;
+            if (cache.TryGetValue(n, out var gespeichert)) return gespeichert;
+            var ergebnis = Fib(n - 1) + Fib(n - 2);
+            cache[n] = ergebnis;
+            return ergebnis;
+        }
+
+
+
+================================================================================
+ 14. FP: AUSDRÜCKE, PATTERN MATCHING & DATENTYPEN
+================================================================================
+
+    FP bevorzugt Ausdrücke, weil man sie kombinieren und überall einsetzen
+    kann.
+
+Ausdruck (Expression)
+    Code, der einen Wert ergibt: 3 + 4, x > 5, Quadrat(2).
+
+Anweisung (Statement)
+    Code, der etwas tut, aber keinen Wert ergibt: if, for, eine Zuweisung.
+
+Ternärer Operator (Bedingungsoperator)
+    Ein if-else als Ausdruck.
+
+        string status = alter >= 18 ? "volljährig" : "minderjährig";
+
+switch-Ausdruck (ab C# 8)
+    Ein switch, der einen Wert zurückgibt. _ (Discard) steht für alle anderen
+    Fälle.
+
+        string bewertung = note switch
+        {
+            >= 5.5 => "sehr gut",
+            >= 4.0 => "genügend",
+            _      => "ungenügend"
+        };
+
+Pattern Matching (Mustervergleich)
+    Prüft, ob ein Wert einer bestimmten Form entspricht, und zieht dabei
+    Werte heraus. Stammt aus funktionalen Sprachen.
+
+        object o = 42;
+        if (o is int zahl)                        // Typ-Muster
+            Console.WriteLine(zahl + 1);
+
+        string Beschreiben(Person p) => p switch
+        {
+            { Alter: < 18 }  => "Kind/Jugendlich",   // Eigenschafts-Muster
+            { Alter: >= 65 } => "Rentner",
+            _                => "Erwachsen"
+        };
+
+Tupel
+    Eine kleine, unbenannte Gruppe von Werten. Praktisch, um mehrere Werte
+    zurückzugeben, ohne eine Klasse zu schreiben.
+
+Dekonstruktion
+    Ein Tupel oder Record in einzelne Variablen aufteilen.
+
+        (int min, int max) MinMax(List<int> l) => (l.Min(), l.Max());
+
+        var (min, max) = MinMax(zahlen);   // Dekonstruktion
+
+Null & Nullable
+    null bedeutet "kein Wert". Ein ? nach dem Typ (int?, string?) erlaubt
+    null. FP vermeidet null, weil es zu Abstürzen führt
+    (NullReferenceException).
+
+Option / Maybe
+    Funktionales Konzept für "Wert vorhanden oder nicht", als Alternative zu
+    null (F#: Option, Haskell: Maybe). In C# nicht eingebaut; am ähnlichsten
+    sind ?. und ??.
+
+        string? name = null;
+        int laenge = name?.Length ?? 0;   // ?. = nur wenn nicht null, ?? = Ersatzwert
+
+Funktor (vereinfacht)
+    Ein "Behälter", auf den man mit Map eine Funktion anwenden kann, ohne ihn
+    zu öffnen. Eine Liste mit Select ist ein Funktor.
+
+Monade (vereinfacht)
+    Ein Behälter, bei dem man Operationen verketten kann, auch wenn jede
+    Operation wieder einen Behälter zurückgibt (FlatMap / SelectMany).
+    Beispiele: IEnumerable<T> mit SelectMany, Task<T> mit await, Nullable
+    mit ?.
+
+
+
+================================================================================
+ 15. FP: WEITERE BEGRIFFE, VOR- & NACHTEILE
+================================================================================
+
+Idempotenz
+    Eine Operation hat mehrfach ausgeführt dasselbe Ergebnis wie einmal.
+    Beispiel: Math.Abs(Math.Abs(x)) == Math.Abs(x), ein Licht "einschalten".
+    Nicht idempotent: zaehler++.
+
+Thread-Sicherheit
+    Code kann von mehreren Threads gleichzeitig ausgeführt werden, ohne dass
+    Fehler entstehen. Reine Funktionen und unveränderliche Daten sind
+    automatisch thread-sicher.
+
+Race Condition
+    Mehrere Threads greifen gleichzeitig auf denselben veränderlichen Zustand
+    zu, und das Ergebnis hängt davon ab, wer zuerst ist. FP vermeidet das
+    durch Immutability.
+
+Parallelisierung
+    Reine Funktionen sind unabhängig voneinander und laufen darum leicht
+    gleichzeitig auf mehreren Prozessorkernen. In C# mit PLINQ:
+
+        var ergebnis = zahlen.AsParallel().Select(x => x * x).ToList();
+
+Testbarkeit
+    Reine Funktionen sind leicht mit Unit-Tests zu prüfen: Man braucht nur
+    Eingabe und erwartete Ausgabe, ohne Datenbank, Dateien oder anderen
+    Zustand.
+
+Refactoring
+    Code umbauen, ohne sein Verhalten zu ändern, damit er lesbarer oder
+    wartbarer wird. Typisch in M323: imperativen Code (Schleifen, veränderte
+    Variablen) in funktionalen Code (LINQ, reine Funktionen) umschreiben.
+
+        // vorher: imperativ
+        int summe = 0;
+        foreach (var p in produkte)
+        {
+            if (p.Preis > 10)
+                summe += p.Preis * p.Menge;
+        }
+
+        // nachher: funktional
+        int summe = produkte.Where(p => p.Preis > 10)
+                            .Sum(p => p.Preis * p.Menge);
+
+
+--- Vor- und Nachteile der FP --------------------------------------------------
+
+    VORTEILE                                 NACHTEILE
+    ---------------------------------------  ---------------------------------------
+    Weniger Fehler, weil kein                Ungewohnte Denkweise, steilere
+    veränderlicher Zustand                   Lernkurve
+    Leichter zu testen und zu verstehen      Rekursion kann den Stack sprengen
+    Einfach parallelisierbar                 Kopien statt Änderungen brauchen
+                                             mehr Speicher und Zeit
+    Kürzerer, ausdrucksstarker Code          Seiteneffekte (Ein-/Ausgabe,
+                                             Datenbank) nicht ganz vermeidbar
+    Funktionen gut wiederverwendbar und      Debugging in langen Ketten
+    kombinierbar                             manchmal schwieriger
+
+
+################################################################################
+
+
+
+eine Assembly bezeichnet eine kompilierte Code-Einheit. Sie ist das grundlegende Paket, in dem Ihr kompiliertes Programm oder Ihre Bibliothek ausgeliefert wird.

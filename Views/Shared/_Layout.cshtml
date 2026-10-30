@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <nav>
+        <a asp-controller="Import" asp-action="Index">CSV-Import</a> |
+        <a asp-controller="Raeume" asp-action="Index">Räume</a> |
+        <a asp-controller="Praesentationen" asp-action="Index">Präsentationen</a> |
+        <a asp-controller="Uebersicht" asp-action="Index">Übersicht</a>
+    </nav>
+    
+    <h1>@ViewData["Title"]</h1>
+    @RenderBody()
+</body>
+</html>

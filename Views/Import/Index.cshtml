@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "CSV-Import";
+}
+
+<p>@TempData["Meldung"]</p>
+@Html.ValidationSummary()
+
+<h2>G3Sus</h2>
+
+<p>Kopfzeile: Vorname;Nachname;Klasse</p>
+<form action="/Import/G3SusImportieren" enctype="multipart/form-data" method="post">
+    @Html.AntiForgeryToken()
+    <!-- Es fügt ein verstecktes Formularfeld mit einem zufälligen, signierten Token ein. -->
+    <input type="file" name="datei" accept=".csv" required>
+    <button type="submit">Importieren</button>
+</form>
+
+<h2>Präsentationen</h2>
+<p>Kopfzeile: Titel;Beschreibung;Beginn;Raum</p>
+<form action="/Import/PraesentationenImportieren" enctype="multipart/form-data" method="post">
+    @Html.AntiForgeryToken()
+    <input type="file" name="datei" accept=".csv" required>
+    <button type="submit">Importieren</button>
+</form>
