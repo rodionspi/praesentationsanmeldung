@@ -154,6 +154,27 @@ public class ImportController : Controller
                 RaumId = raum.Id
             });
         }
+        if (!ModelState.IsValid)
+        {
+            return View("Index");
+        }
+
+        await using var transaktion = await _db.Database.BeginTransactionAsync(); // Wir öffnen den Paket.
+        try
+        {
+            _db.Praesentationen.AddRange(neue); // EF Core merkt sich, dass es n neue gibt.
+            await _db.SaveChangesAsync(); // jetzt gehen 3 INSERTs an die Datenbank.
+            await transaktion.CommitAsync(); // alles dauerhaft machen.
+        }
+        catch(DbUpdateException) // Wenn beim Speichern in die Daten ein Fehler auftritt, fangen wir es hier ab.
+        {
+            await transaktion.RollbackAsync(); // Es macht alle Änderungen dieser Transaktion wieder ungeschehen.
+            ModelState.AddModelError("", "Fehler beim Speichern. Es wurde nichts importiert");
+            return View("Index");
+        }
+
+        TempData["Meldung"] = $"{neue.Count} Präsentation importiert.";
+        return RedirectToAction(nameof(Index));
     }
 
     private async Task<List<string>> DateiLesen (IFormFile? datei, string kopfzeile)
