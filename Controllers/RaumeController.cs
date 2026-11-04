@@ -1,8 +1,6 @@
-﻿
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
 using praesentationsanmeldung.Models;
@@ -10,11 +8,11 @@ using praesentationsanmeldung.Models;
 namespace praesentationsanmeldung.Controllers;
 
 [Authorize(Roles = Rollen.Admin)]
-public class RaemeController : Controller
-{ 
+public class RaeumeController : Controller
+{
     private readonly AppDbContext _db;
 
-    public RaemeController(AppDbContext db)
+    public RaeumeController(AppDbContext db)
     {
         _db = db;
     }
@@ -31,15 +29,81 @@ public class RaemeController : Controller
     {
         return View();
     }
-    
+
     [HttpPost]
-    [ValidateAntiForgeryToken] // Ohne das könnte eine fremde Webseite, auf der man zufällig gerade eingeloggt ist, heimlich ein Formular an seine App schicken und sich als ihn ausgeben.
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Bezeichnung,Kapazitaet")] Raum raum)
-    // Das schränkt ein, welche Felder aus dem Formular überhaupt ins raum-Objekt übernommen werden.
     {
         if (await _db.Raeume.AnyAsync(r => r.Bezeichnung == raum.Bezeichnung))
         {
             ModelState.AddModelError(nameof(Raum.Bezeichnung), "Diese Bezeichnung gibt es schon.");
         }
+
+        if (!ModelState.IsValid)
+        {
+            return View(raum);
+        }
+
+        _db.Raeume.Add(raum);
+        await _db.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var raum = await _db.Raeume.FindAsync(id);
+        if (raum == null)
+        {
+            return NotFound();
+        }
+
+        return View(raum);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, [Bind("Bezeichnung,Kapazitaet")] Raum eingabe)
+    {
+        var raum = await _db.Raeume.FindAsync(id);
+        if (raum == null)
+        {
+            return NotFound();
+        }
+
+        if (await _db.Raeume.AnyAsync(r => r.Bezeichnung == eingabe.Bezeichnung && r.Id != id))
+        {
+            ModelState.AddModelError(nameof(Raum.Bezeichnung), "Diese Bezeichnung gibt es schon.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(eingabe);
+        }
+
+        raum.Bezeichnung = eingabe.Bezeichnung;
+        raum.Kapazitaet = eingabe.Kapazitaet;
+        await _db.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        if (await _db.Praesentationen.AnyAsync(p => p.RaumId == id))
+        {
+            TempData["Fehler"] = "Dieser Raum hat noch Präsentationen und kann nicht gelöscht werden.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var raum = await _db.Raeume.FindAsync(id);
+        if (raum != null)
+        {
+            _db.Raeume.Remove(raum);
+            await _db.SaveChangesAsync();
+        }
+
+        return RedirectToAction(nameof(Index));
     }
 }

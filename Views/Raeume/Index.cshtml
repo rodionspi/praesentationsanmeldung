@@ -1,0 +1,15 @@
+@model IEnumerable<Raum>
+@{
+    ViewData["Title"] = "Räume";
+}
+
+<p><a asp-action="Create">Neuer Raum</a></p>
+<p>@TempData["Fehler"]</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Bezeichnung</th>
+        </tr>
+    </thead>
+</table>
