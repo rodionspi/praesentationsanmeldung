@@ -10,6 +10,23 @@
     <thead>
         <tr>
             <th>Bezeichnung</th>
+            <th>Kapazität</th>
+            <th></th>
         </tr>
     </thead>
+    <tbody>
+        @foreach (var raum in Model)
+        {
+            <tr>
+                <td>@raum.Bezeichnung</td>
+                <td>@raum.Kapazitaet</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@raum.Id">Bearbeiten</a>
+                    <form asp-action="Delete" asp-route-id="@raum.Id" onsubmit="return confirm('Raum wirklich löschen?');">
+                        <button type="submit">Löschen</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
