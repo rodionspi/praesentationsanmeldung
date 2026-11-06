@@ -12,7 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "Bitte einen Wert eingeben.");
+    options.ModelBindingMessageProvider.SetAttemptedValueIsInvalidAccessor((wert, feld) => $"Der Wert '{wert}' ist ungültig.");
+});
 
 builder.Services.AddAuthentication
 //Cookies werden zum Standardverfahren für die Anmeldung.
