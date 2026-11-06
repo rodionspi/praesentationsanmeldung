@@ -14,14 +14,12 @@ namespace praesentationsanmeldung.Controllers;
 public class AccountController : Controller
 {
     private readonly AppDbContext _db;
-    private readonly IPasswordHasher<Admin> _adminHasher;
-    private readonly IPasswordHasher<G3Sus> _g3SusHasher;
+    private readonly PasswordHasher<Admin> _adminHasher = new PasswordHasher<Admin>();
+    private readonly PasswordHasher<G3Sus> _g3SusHasher = new PasswordHasher<G3Sus>();
 
-    public AccountController(AppDbContext db, IPasswordHasher<Admin> adminHasher, IPasswordHasher<G3Sus> g3SusHasher)
+    public AccountController(AppDbContext db)
     {
         _db = db;
-        _adminHasher = adminHasher;
-        _g3SusHasher = g3SusHasher;
     }
 
     [HttpGet]

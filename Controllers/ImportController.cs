@@ -22,12 +22,11 @@ namespace praesentationsanmeldung.Controllers;
 public class ImportController : Controller
 {
     private readonly AppDbContext _db;
-    private readonly IPasswordHasher<G3Sus> _hasher;
+    private readonly PasswordHasher<G3Sus> _hasher = new PasswordHasher<G3Sus>();
 
-    public ImportController(AppDbContext db, IPasswordHasher<G3Sus> hasher)
+    public ImportController(AppDbContext db)
     {
         _db = db;
-        _hasher = hasher;
     }
 
     [HttpGet]
