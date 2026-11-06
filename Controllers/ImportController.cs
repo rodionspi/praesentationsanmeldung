@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 // 	Der ORM (ADO-Alternative) für Datenbankzugriff — stellt Erweiterungsmethoden wie .Any(), .Include(), .ToListAsync(), .Where() auf DbSet<T> bereit
+using System.Net.Mail;
+using Microsoft.AspNetCore.Identity;
 using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
 using praesentationsanmeldung.Models;
@@ -20,10 +22,12 @@ namespace praesentationsanmeldung.Controllers;
 public class ImportController : Controller
 {
     private readonly AppDbContext _db;
+    private readonly IPasswordHasher<G3Sus> _hasher;
 
-    public ImportController(AppDbContext db)
+    public ImportController(AppDbContext db, IPasswordHasher<G3Sus> hasher)
     {
         _db = db;
+        _hasher = hasher;
     }
 
     [HttpGet]
@@ -37,7 +41,8 @@ public class ImportController : Controller
     public async Task<IActionResult> G3SusImportieren(IFormFile? datei)
     // Weil die Methode nicht sofort ein Ergebnis hat — sie muss erst auf Datei-Lesen und Datenbank-Speichern warten. Also sagt der Rückgabetyp ehrlich: “du bekommst nicht direkt ein IActionResult, du bekommst eine Wartemarke dafür, die sich später in ein IActionResult einlöst.”
     {
-        var zeilen = await DateiLesen(datei, "Vorname;Nachname;Klasse");
+        var zeilen = await DateiLesen(datei, "Vorname;Nachname;Klasse;Email;Passwort");
+        var vorhandeneEmails = new HashSet<string>(await _db.G3Sus.Select(s => s.Email).ToListAsync(), StringComparer.OrdinalIgnoreCase);
         var neue = new List<G3Sus>();
 
         for (var i = 1; i < zeilen.Count; i++)
@@ -49,21 +54,41 @@ public class ImportController : Controller
             }
 
             var spalten = zeilen[i].Split(";");
-            if (spalten.Length != 3)
+            if (spalten.Length != 5)
             {
-                Fehler(nr, $"3 Spalten erwartet, aber {spalten.Length} gefunden");
+                Fehler(nr, $"5 Spalten erwartet, aber {spalten.Length} gefunden");
                 continue;
             }
 
             var vorname = spalten[0].Trim();
             var nachname = spalten[1].Trim();
             var klasse = spalten[2].Trim();
+            var email = spalten[3].Trim();
+            var passwort = spalten[4].Trim();
 
             TextPruefen(nr, "Vorname", vorname, 100);
             TextPruefen(nr, "Nachname", nachname, 100);
             TextPruefen(nr, "Klasse", klasse, 20);
-            
-            neue.Add(new G3Sus{ Vorname = vorname, Nachname = nachname, Klasse = klasse });
+            TextPruefen(nr, "E-Mail", email, 200);
+
+            if (email != "" && !MailAddress.TryCreate(email, out _))
+            {
+                Fehler(nr, $"E-Mail '{email}' ist ungültig.");
+            }
+
+            if (email != "" && !vorhandeneEmails.Add(email))
+            {
+                Fehler(nr, $"E-Mail '{email}' gibt es schon.");
+            }
+
+            if (passwort.Length < 8)
+            {
+                Fehler(nr, "Das Passwort muss mindestens 8 Zeichen lang sein.");
+            }
+
+            var neuer = new G3Sus { Vorname = vorname, Nachname = nachname, Klasse = klasse, Email = email };
+            neuer.PasswortHash = _hasher.HashPassword(neuer, passwort);
+            neue.Add(neuer);
         }
 
         if (!ModelState.IsValid)
@@ -171,7 +196,7 @@ public class ImportController : Controller
             return View("Index");
         }
 
-        TempData["Meldung"] = $"{neue.Count} Präsentation importiert.";
+        TempData["Meldung"] = $"{neue.Count} Präsentationen importiert.";
         return RedirectToAction(nameof(Index));
     }
 

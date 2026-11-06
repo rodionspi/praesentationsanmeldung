@@ -47,6 +47,8 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
 //Diese Zeile registriert einen Dependency-Injection-Service zum sicheren Hashen von Passwörtern
 
+builder.Services.AddScoped<IPasswordHasher<G3Sus>, PasswordHasher<G3Sus>>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

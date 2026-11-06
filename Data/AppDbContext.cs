@@ -55,6 +55,9 @@ public class AppDbContext : DbContext
             entity.Property(s => s.Vorname).IsRequired().HasMaxLength(100);
             entity.Property(s => s.Nachname).IsRequired().HasMaxLength(100);
             entity.Property(s => s.Klasse).IsRequired().HasMaxLength(20);
+            entity.Property(s => s.Email).IsRequired().HasMaxLength(200);
+            entity.Property(s => s.PasswortHash).IsRequired();
+            entity.HasIndex(s => s.Email).IsUnique();
         });
 
         modelBuilder.Entity<Raum>(entity =>
