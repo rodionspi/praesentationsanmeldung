@@ -4,7 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
-using praesentationsanmeldung.Migrations;
+using praesentationsanmeldung.Models;
+using praesentationsanmeldung.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "Bitte einen Wert eingeben.");
+    options.ModelBindingMessageProvider.SetAttemptedValueIsInvalidAccessor((wert, feld) => $"Der Wert '{wert}' ist ungültig.");
+});
 
 builder.Services.AddAuthentication
 //Cookies werden zum Standardverfahren für die Anmeldung.
@@ -46,6 +51,9 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
 //Diese Zeile registriert einen Dependency-Injection-Service zum sicheren Hashen von Passwörtern
+
+builder.Services.AddScoped<IPasswordHasher<G3Sus>, PasswordHasher<G3Sus>>();
+builder.Services.AddScoped<MailService>();
 
 var app = builder.Build();
 

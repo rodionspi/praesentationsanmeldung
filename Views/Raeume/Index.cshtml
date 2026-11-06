@@ -1,0 +1,33 @@
+@model IEnumerable<Raum>
+@{
+    ViewData["Title"] = "Räume";
+}
+
+<p><a asp-action="Create" class="btn btn-primary">Neuer Raum</a></p>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Bezeichnung</th>
+                <th>Kapazität</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var raum in Model)
+            {
+                <tr>
+                    <td>@raum.Bezeichnung</td>
+                    <td>@raum.Kapazitaet</td>
+                    <td class="text-end text-nowrap">
+                        <a asp-action="Edit" asp-route-id="@raum.Id" class="btn btn-outline-secondary btn-sm">Bearbeiten</a>
+                        <form asp-action="Delete" asp-route-id="@raum.Id" class="d-inline" onsubmit="return confirm('Raum wirklich löschen?');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Löschen</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

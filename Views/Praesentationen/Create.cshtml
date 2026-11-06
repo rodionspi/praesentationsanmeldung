@@ -1,0 +1,30 @@
+@model Praesentation
+@{
+    ViewData["Title"] = "Neue Präsentation";
+}
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Titel" class="form-label">Titel</label>
+        <input asp-for="Titel" class="form-control" />
+        <span asp-validation-for="Titel" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Beschreibung" class="form-label">Beschreibung</label>
+        <textarea asp-for="Beschreibung" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Beschreibung" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Beginn" class="form-label">Beginn</label>
+        <input asp-for="Beginn" asp-format="{0:yyyy-MM-ddTHH:mm}" class="form-control" />
+        <span asp-validation-for="Beginn" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="RaumId" class="form-label">Raum</label>
+        <select asp-for="RaumId" asp-items="ViewBag.Raeume" class="form-select"></select>
+        <span asp-validation-for="RaumId" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Speichern</button>
+    <a asp-action="Index" class="btn btn-secondary">Abbrechen</a>
+</form>

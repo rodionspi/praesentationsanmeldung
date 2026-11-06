@@ -1,0 +1,30 @@
+@model IEnumerable<Praesentation>
+@{
+    ViewData["Title"] = "Übersicht";
+}
+
+@foreach (var p in Model)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <strong>@p.Titel</strong><br />
+            <span class="small text-muted">@p.Beginn.ToString("dd.MM.yyyy HH:mm") · Raum @p.Raum.Bezeichnung · @p.Eintragungen.Count von @p.Raum.Kapazitaet Plätzen belegt</span>
+        </div>
+        @if (p.Eintragungen.Count == 0)
+        {
+            <div class="card-body text-muted">Noch keine Eintragungen.</div>
+        }
+        else
+        {
+            <ul class="list-group list-group-flush">
+                @foreach (var eintragung in p.Eintragungen.OrderBy(e => e.G3Sus.Nachname).ThenBy(e => e.G3Sus.Vorname))
+                {
+                    <li class="list-group-item">
+                        @eintragung.G3Sus.Nachname @eintragung.G3Sus.Vorname (@eintragung.G3Sus.Klasse)
+                        <span class="small text-muted">· eingetragen am @eintragung.EingetragenAm.ToString("dd.MM.yyyy HH:mm")</span>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+}
