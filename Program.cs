@@ -2,10 +2,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
 using praesentationsanmeldung.Models;
-using praesentationsanmeldung.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,19 +39,10 @@ builder.Services.AddAuthentication
 
 builder.Services.AddAuthorization(options =>
 {
-        options.AddPolicy(Rollen.Admin, policy => policy.RequireRole(Rollen.Admin));
-        options.AddPolicy(Rollen.G3SuS, policy => policy.RequireRole(Rollen.G3SuS));
-
         options.FallbackPolicy = new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()
             .Build();
 });
-
-builder.Services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
-//Diese Zeile registriert einen Dependency-Injection-Service zum sicheren Hashen von Passwörtern
-
-builder.Services.AddScoped<IPasswordHasher<G3Sus>, PasswordHasher<G3Sus>>();
-builder.Services.AddScoped<MailService>();
 
 var app = builder.Build();
 
@@ -62,8 +51,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     //Holt eine Instanz von AppDbContext aus diesem neuen Scope — genau so, wie es sonst automatisch per Constructor Injection in einem Controller passieren würde, nur hier manuell angefordert.GetRequiredService wirft eine Exception, falls der Service nicht registriert ist(im Gegensatz zu GetService, das null zurückgeben würde)
-    var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher<Admin>>();
-    //Gleiches Prinzip — holt den PasswordHasher<Admin>, den ich vorher mit AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>() registriert habe.
+    var hasher = new PasswordHasher<Admin>();
     var startPasswort = app.Configuration["StartAdmin:Passwort"];
     //Liest das Passwort aus den User Secrets
     
