@@ -96,7 +96,7 @@ app.UseAuthorization();
 app.MapStaticAssets().AllowAnonymous();
 app.MapControllerRoute(
         name: "default",
-        pattern: "{controller=Import}/{action=Index}/{id?}")
+        pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();

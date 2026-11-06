@@ -1,0 +1,50 @@
+@model List<PraesentationMitPlaetzen>
+@{
+    ViewData["Title"] = "Präsentationen";
+}
+
+<p>Du bist für @ViewBag.Anzahl von maximal @ViewBag.Max Präsentationen eingetragen.</p>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Beginn</th>
+                <th>Titel</th>
+                <th>Raum</th>
+                <th>Freie Plätze</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td class="text-nowrap">@p.Beginn.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>
+                        <strong>@p.Titel</strong>
+                        <div class="small text-muted">@p.Beschreibung</div>
+                    </td>
+                    <td>@p.Raum</td>
+                    <td>@Math.Max(0, p.FreiePlaetze)</td>
+                    <td class="text-end">
+                        @if (p.Eingetragen)
+                        {
+                            <span class="badge bg-success">Eingetragen</span>
+                        }
+                        else if (p.FreiePlaetze <= 0)
+                        {
+                            <span class="badge bg-secondary">Voll</span>
+                        }
+                        else
+                        {
+                            <form asp-action="Eintragen" asp-route-id="@p.Id">
+                                <button type="submit" class="btn btn-primary btn-sm">Eintragen</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
