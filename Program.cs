@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
-using praesentationsanmeldung.Migrations;
+using praesentationsanmeldung.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);

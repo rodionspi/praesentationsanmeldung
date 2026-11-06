@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
 using Microsoft.AspNetCore.Authorization;
-using praesentationsanmeldung.Migrations;
+using praesentationsanmeldung.Models;
 
 namespace praesentationsanmeldung.Controllers;
 
