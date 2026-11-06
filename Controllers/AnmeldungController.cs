@@ -1,3 +1,5 @@
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -5,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
 using praesentationsanmeldung.Models;
-using praesentationsanmeldung.Services;
 
 namespace praesentationsanmeldung.Controllers;
 
@@ -13,13 +14,13 @@ namespace praesentationsanmeldung.Controllers;
 public class AnmeldungController : Controller
 {
     private readonly AppDbContext _db;
-    private readonly MailService _mail;
+    private readonly IConfiguration _config;
     private readonly int _maxEintragungen;
 
-    public AnmeldungController(AppDbContext db, MailService mail, IConfiguration config)
+    public AnmeldungController(AppDbContext db, IConfiguration config)
     {
         _db = db;
-        _mail = mail;
+        _config = config;
         _maxEintragungen = config.GetValue<int>("MaxEintragungen");
     }
 
@@ -101,13 +102,17 @@ public class AnmeldungController : Controller
 
         TempData["Meldung"] = $"Du bist für «{praesentation.Titel}» eingetragen.";
 
-        var text = $"Hallo {g3Sus.Vorname}\n\n" +
-                   $"Du bist für die Präsentation «{praesentation.Titel}» eingetragen.\n" +
-                   $"Beginn: {praesentation.Beginn:dd.MM.yyyy HH:mm} Uhr\n" +
-                   $"Raum: {praesentation.Raum.Bezeichnung}\n\n" +
-                   "Freundliche Grüsse";
+        if (string.IsNullOrEmpty(_config["Smtp:Host"]))
+        {
+            TempData["Fehler"] = "Der Mailversand ist nicht eingerichtet, darum kommt keine Bestätigungsmail.";
+            return RedirectToAction(nameof(Index));
+        }
 
-        if (!await _mail.SendenAsync(g3Sus.Email, "Bestätigung deiner Eintragung", text))
+        try
+        {
+            await BestaetigungSenden(g3Sus, praesentation);
+        }
+        catch (SmtpException)
         {
             TempData["Fehler"] = "Die Bestätigungsmail konnte nicht gesendet werden.";
         }
@@ -146,6 +151,22 @@ public class AnmeldungController : Controller
         }
 
         return RedirectToAction(nameof(Meine));
+    }
+
+    private async Task BestaetigungSenden(G3Sus g3Sus, Praesentation praesentation)
+    {
+        var text = $"Hallo {g3Sus.Vorname}\n\n" +
+                   $"Du bist für die Präsentation «{praesentation.Titel}» eingetragen.\n" +
+                   $"Beginn: {praesentation.Beginn:dd.MM.yyyy HH:mm} Uhr\n" +
+                   $"Raum: {praesentation.Raum.Bezeichnung}\n\n" +
+                   "Freundliche Grüsse";
+
+        using var client = new SmtpClient(_config["Smtp:Host"], _config.GetValue<int>("Smtp:Port"));
+        client.EnableSsl = true;
+        client.Credentials = new NetworkCredential(_config["Smtp:Benutzer"], _config["Smtp:Passwort"]);
+
+        using var mail = new MailMessage(_config["Smtp:Absender"]!, g3Sus.Email, "Bestätigung deiner Eintragung", text);
+        await client.SendMailAsync(mail);
     }
 
     private int AngemeldeteId()
