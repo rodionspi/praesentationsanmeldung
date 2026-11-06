@@ -3,30 +3,31 @@
     ViewData["Title"] = "Räume";
 }
 
-<p><a asp-action="Create">Neuer Raum</a></p>
-<p>@TempData["Fehler"]</p>
+<p><a asp-action="Create" class="btn btn-primary">Neuer Raum</a></p>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Bezeichnung</th>
-            <th>Kapazität</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var raum in Model)
-        {
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
             <tr>
-                <td>@raum.Bezeichnung</td>
-                <td>@raum.Kapazitaet</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@raum.Id">Bearbeiten</a>
-                    <form asp-action="Delete" asp-route-id="@raum.Id" onsubmit="return confirm('Raum wirklich löschen?');">
-                        <button type="submit">Löschen</button>
-                    </form>
-                </td>
+                <th>Bezeichnung</th>
+                <th>Kapazität</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var raum in Model)
+            {
+                <tr>
+                    <td>@raum.Bezeichnung</td>
+                    <td>@raum.Kapazitaet</td>
+                    <td class="text-end text-nowrap">
+                        <a asp-action="Edit" asp-route-id="@raum.Id" class="btn btn-outline-secondary btn-sm">Bearbeiten</a>
+                        <form asp-action="Delete" asp-route-id="@raum.Id" class="d-inline" onsubmit="return confirm('Raum wirklich löschen?');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Löschen</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

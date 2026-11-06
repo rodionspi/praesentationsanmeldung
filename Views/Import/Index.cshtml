@@ -2,23 +2,29 @@
     ViewData["Title"] = "CSV-Import";
 }
 
-<p>@TempData["Meldung"]</p>
-@Html.ValidationSummary()
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<h2>G3Sus</h2>
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5">G3SuS</h2>
+        <p>Kopfzeile: <code>Vorname;Nachname;Klasse;Email;Passwort</code></p>
+        <form action="/Import/G3SusImportieren" enctype="multipart/form-data" method="post">
+            @Html.AntiForgeryToken()
+            <!-- Es fügt ein verstecktes Formularfeld mit einem zufälligen, signierten Token ein. -->
+            <input type="file" name="datei" accept=".csv" class="form-control mb-2" required>
+            <button type="submit" class="btn btn-primary">Importieren</button>
+        </form>
+    </div>
+</div>
 
-<p>Kopfzeile: Vorname;Nachname;Klasse;Email;Passwort</p>
-<form action="/Import/G3SusImportieren" enctype="multipart/form-data" method="post">
-    @Html.AntiForgeryToken()
-    <!-- Es fügt ein verstecktes Formularfeld mit einem zufälligen, signierten Token ein. -->
-    <input type="file" name="datei" accept=".csv" required>
-    <button type="submit">Importieren</button>
-</form>
-
-<h2>Präsentationen</h2>
-<p>Kopfzeile: Titel;Beschreibung;Beginn;Raum</p>
-<form action="/Import/PraesentationenImportieren" enctype="multipart/form-data" method="post">
-    @Html.AntiForgeryToken()
-    <input type="file" name="datei" accept=".csv" required>
-    <button type="submit">Importieren</button>
-</form>
+<div class="card mb-4">
+    <div class="card-body">
+        <h2 class="h5">Präsentationen</h2>
+        <p>Kopfzeile: <code>Titel;Beschreibung;Beginn;Raum</code></p>
+        <form action="/Import/PraesentationenImportieren" enctype="multipart/form-data" method="post">
+            @Html.AntiForgeryToken()
+            <input type="file" name="datei" accept=".csv" class="form-control mb-2" required>
+            <button type="submit" class="btn btn-primary">Importieren</button>
+        </form>
+    </div>
+</div>
