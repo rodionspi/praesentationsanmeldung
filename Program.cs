@@ -13,7 +13,11 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-builder.Services.AddScoped<IPasswordHasher<Admin>, PasswordHasher<Admin>>();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.ModelBindingMessageProvider.SetValueMustNotBeNullAccessor(_ => "Bitte einen Wert eingeben.");
+    options.ModelBindingMessageProvider.SetAttemptedValueIsInvalidAccessor((wert, feld) => $"Der Wert '{wert}' ist ungültig.");
+});
 
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -31,17 +35,36 @@ builder.Services
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy(Rollen.Admin, policy => policy.RequireRole(Rollen.Admin));
-    options.AddPolicy(Rollen.G3SuS, policy => policy.RequireRole(Rollen.G3SuS));
-
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
 });
 
 var app = builder.Build();
 
-StartAdmin.AnlegenFallsNoetig(app);
+using (var scope = app.Services.CreateScope())
+//AppDbContext gibt es nur innerhalb eines „Scopes“. Beim Start läuft noch keine Anfrage, deshalb öffne ich selbst einen. app.Services ist der Root-Service-Provider (der ganzen App). Daraus direkt einen Scoped-Service zu holen wäre ein Fehler/Warning (“captive dependency”) — stattdessen erzeugt man manuell einen neuen, temporären Scope, der sich wie ein “virtueller Request” verhält. using sorgt dafür, dass der Scope am Ende des Blocks korrekt disposed wird
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    //Holt eine Instanz von AppDbContext aus diesem neuen Scope — genau so, wie es sonst automatisch per Constructor Injection in einem Controller passieren würde, nur hier manuell angefordert.GetRequiredService wirft eine Exception, falls der Service nicht registriert ist(im Gegensatz zu GetService, das null zurückgeben würde)
+    var hasher = new PasswordHasher<Admin>();
+    var startPasswort = app.Configuration["StartAdmin:Passwort"];
+    //Liest das Passwort aus den User Secrets
+    
+    if (!string.IsNullOrEmpty(startPasswort) && !db.Admins.Any())
+    //!db.Admins.Any() — es gibt noch keinen Admin in der Datenbank-Tabelle (EF Core übersetzt .Any() in ein effizientes SQL EXISTS, nicht SELECT *)
+    {
+        var admin = new Admin { Benutzername = "admin" };
+        //Erstellt ein neues Admin-Objekt (Entity) im Speicher — noch nicht in der DB gespeichert, nur ein C#-Objekt mit Benutzername = "admin".
+        admin.PasswortHash = hasher.HashPassword(admin, startPasswort);
+        db.Admins.Add(admin);
+        //Markiert das admin - Objekt in EF Core als “neu hinzuzufügen” — das DbSet<Admin> ist noch im Tracking-Zustand, es ist noch kein SQL - Befehl an die Datenbank gegangen.
+        db.SaveChanges();
+        //Erst hier wird tatsächlich ein INSERT-SQL-Statement an die Datenbank gesendet und ausgeführt. Ohne diesen Aufruf würde gar nichts gespeichert werden.
+    }
+
+
+}
 
 if (!app.Environment.IsDevelopment())
 {
@@ -55,8 +78,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets().AllowAnonymous();
-
-app.MapControllerRoute(name: "default", pattern: "{controller=Import}/{action=Index}/{id?}")
+app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 app.Run();

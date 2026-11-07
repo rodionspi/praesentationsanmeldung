@@ -1,0 +1,20 @@
+@model Raum
+@{
+    ViewData["Title"] = "Neuer Raum";
+}
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Bezeichnung" class="form-label">Bezeichnung</label>
+        <input asp-for="Bezeichnung" class="form-control" />
+        <span asp-validation-for="Bezeichnung" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Kapazitaet" class="form-label">Kapazität</label>
+        <input asp-for="Kapazitaet" class="form-control" />
+        <span asp-validation-for="Kapazitaet" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Speichern</button>
+    <a asp-action="Index" class="btn btn-secondary">Abbrechen</a>
+</form>

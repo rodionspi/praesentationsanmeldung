@@ -14,12 +14,12 @@ namespace praesentationsanmeldung.Controllers;
 public class AccountController : Controller
 {
     private readonly AppDbContext _db;
-    private readonly IPasswordHasher<Admin> _hasher;
+    private readonly PasswordHasher<Admin> _adminHasher = new PasswordHasher<Admin>();
+    private readonly PasswordHasher<G3Sus> _g3SusHasher = new PasswordHasher<G3Sus>();
 
-    public AccountController(AppDbContext db, IPasswordHasher<Admin> hasher)
+    public AccountController(AppDbContext db)
     {
         _db = db;
-        _hasher = hasher;
     }
 
     [HttpGet]
@@ -41,36 +41,50 @@ public class AccountController : Controller
         }
 
         var admin = await _db.Admins.SingleOrDefaultAsync(a => a.Benutzername == benutzername);
-
-        if (admin == null || !PasswortIstKorrekt(admin, passwort))
+        // 
+        if (admin != null && _adminHasher.VerifyHashedPassword(admin, admin.PasswortHash, passwort) != PasswordVerificationResult.Failed)
         {
-            ModelState.AddModelError("", "Benutzername oder Passwort falsch.");
-            return View();
+            await Anmelden(admin.Id, admin.Benutzername, Rollen.Admin);
+            return LocalRedirect("/");
         }
 
-        await AlsAdminAnmelden(admin);
+        var g3Sus = await _db.G3Sus.SingleOrDefaultAsync(s => s.Email == benutzername);
+        if (g3Sus != null && _g3SusHasher.VerifyHashedPassword(g3Sus, g3Sus.PasswortHash, passwort) != PasswordVerificationResult.Failed)
+        {
+            await Anmelden(g3Sus.Id, $"{g3Sus.Vorname} {g3Sus.Nachname}", Rollen.G3SuS);
+            return LocalRedirect("/");
+        }
 
-        return LocalRedirect("/");
+        ModelState.AddModelError("", "Benutzername oder Passwort falsch.");
+        return View();
     }
 
-    private bool PasswortIstKorrekt(Admin admin, string passwort)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
     {
-        var ergebnis = _hasher.VerifyHashedPassword(admin, admin.PasswortHash, passwort);
-
-        return ergebnis != PasswordVerificationResult.Failed;
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction(nameof(Login));
     }
 
-    private async Task AlsAdminAnmelden(Admin admin)
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
+    }
+
+    private async Task Anmelden(int id, string name, string rolle)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, admin.Benutzername),
-            new Claim(ClaimTypes.Role, Rollen.Admin)
+            new Claim(ClaimTypes.NameIdentifier, id.ToString()),
+            new Claim(ClaimTypes.Name, name),
+            new Claim(ClaimTypes.Role, rolle)
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var benutzer = new ClaimsPrincipal(identity);
 
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, benutzer);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
     }
 }

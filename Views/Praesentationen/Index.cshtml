@@ -1,0 +1,35 @@
+@model IEnumerable<Praesentation>
+@{
+    ViewData["Title"] = "Präsentationen";
+}
+
+<p><a asp-action="Create" class="btn btn-primary">Neue Präsentation</a></p>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Beginn</th>
+                <th>Titel</th>
+                <th>Raum</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td class="text-nowrap">@p.Beginn.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td>@p.Titel</td>
+                    <td>@p.Raum.Bezeichnung</td>
+                    <td class="text-end text-nowrap">
+                        <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-outline-secondary btn-sm">Bearbeiten</a>
+                        <form asp-action="Delete" asp-route-id="@p.Id" class="d-inline" onsubmit="return confirm('Präsentation und alle Eintragungen dazu wirklich löschen?');">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Löschen</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

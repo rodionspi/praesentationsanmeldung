@@ -1,0 +1,41 @@
+@model List<Eintragung>
+@{
+    ViewData["Title"] = "Meine Eintragungen";
+}
+
+<p>Du bist für @Model.Count von maximal @ViewBag.Max Präsentationen eingetragen.</p>
+
+@if (Model.Count == 0)
+{
+    <p>Du hast dich noch für keine Präsentation eingetragen.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Beginn</th>
+                    <th>Titel</th>
+                    <th>Raum</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var eintragung in Model)
+                {
+                    <tr>
+                        <td class="text-nowrap">@eintragung.Praesentation.Beginn.ToString("dd.MM.yyyy HH:mm")</td>
+                        <td>@eintragung.Praesentation.Titel</td>
+                        <td>@eintragung.Praesentation.Raum.Bezeichnung</td>
+                        <td class="text-end">
+                            <form asp-action="Austragen" asp-route-id="@eintragung.Id" onsubmit="return confirm('Wirklich austragen?');">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Austragen</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

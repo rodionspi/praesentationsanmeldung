@@ -1,26 +1,20 @@
-<!DOCTYPE html>
-<html lang="de">
-    <head>
-        <meta charset="utf-8" />
-        <title>Login</title>
-    </head>
-    <body>
-        <h1>Login</h1>
+@{
+    ViewData["Title"] = "Login";
+}
 
-        <form method="post">
-            @Html.AntiForgeryToken()
-            @Html.ValidationSummary()
-
-            <div>
-                <label for="benutzername">Benutzername</label>
-                <input id="benutzername" name="benutzername" required />
+<div class="row justify-content-center">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+        <form method="post" class="card card-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label for="benutzername" class="form-label">Benutzername oder E-Mail</label>
+                <input id="benutzername" name="benutzername" class="form-control" autocomplete="username" required />
             </div>
-            <div>
-                <label for="passwort">Passwort</label>
-                <input id="passwort" name="passwort" type="password" required />
+            <div class="mb-3">
+                <label for="passwort" class="form-label">Passwort</label>
+                <input id="passwort" name="passwort" type="password" class="form-control" autocomplete="current-password" required />
             </div>
-            <button type="submit">Anmelden</button>
+            <button type="submit" class="btn btn-primary w-100">Anmelden</button>
         </form>
-    </body>
-
-</html>
+    </div>
+</div>

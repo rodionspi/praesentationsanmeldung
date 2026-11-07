@@ -1,0 +1,19 @@
+image: mcr.microsoft.com/dotnet/sdk:10.0
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Build und Deploy
+          script:
+            - apt-get update && apt-get install -y zip
+            - dotnet publish praesentationsanmeldung.csproj -c Release -o out
+            - cd out && zip -r ../app.zip . && cd ..
+            - pipe: atlassian/azure-web-apps-deploy:1.2.1
+              variables:
+                AZURE_APP_ID: $AZURE_APP_ID
+                AZURE_PASSWORD: $AZURE_PASSWORD
+                AZURE_TENANT_ID: $AZURE_TENANT_ID
+                AZURE_RESOURCE_GROUP: '<deine-ressourcengruppe>'
+                AZURE_APP_NAME: '<dein-app-name>'
+                ZIP_FILE: 'app.zip'
