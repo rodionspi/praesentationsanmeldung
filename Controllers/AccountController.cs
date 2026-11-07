@@ -1,13 +1,13 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
-using Microsoft.AspNetCore.Authorization;
-using praesentationsanmeldung.Migrations;
+using praesentationsanmeldung.Models;
 
 namespace praesentationsanmeldung.Controllers;
 
@@ -32,26 +32,36 @@ public class AccountController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    //Kurz erklärt: Ohne das könnte eine fremde Webseite, auf der ein Benutzer zufällig gerade eingeloggt ist, heimlich ein Formular an meine App schicken und sich als ihn ausgeben — weil Cookies vom Browser automatisch mitgeschickt werden.
     public async Task<IActionResult> Login(string? benutzername, string? passwort)
-    // die Methode ist asynchron (wichtig, weil Datenbank-Zugriffe — z. B. await db.Admins... — Zeit brauchen und den Server-Thread währenddessen nicht blockieren sollen). IActionResult wird hier zu Task<IActionResult>, weil man das Ergebnis erst awaiten muss.
     {
         if (string.IsNullOrEmpty(benutzername) || string.IsNullOrEmpty(passwort))
         {
             ModelState.AddModelError("", "Bitte Benutzername und Passwort eingeben.");
             return View();
-            // ModelState (von Controller geerbt) ist das „Fehlerprotokoll“ der aktuellen Anfrage.AddModelError(Schlüssel, Text) fügt diesem einen Fehler hinzu. Der Schlüssel „“ bedeutet, dass sich der Fehler auf das gesamte Formular bezieht und nicht auf ein bestimmtes Feld.
         }
 
         var admin = await _db.Admins.SingleOrDefaultAsync(a => a.Benutzername == benutzername);
-        // 
 
-        if (admin == null || _hasher.VerifyHashedPassword(admin, admin.PasswortHash, passwort) == PasswordVerificationResult.Failed)
+        if (admin == null || !PasswortIstKorrekt(admin, passwort))
         {
             ModelState.AddModelError("", "Benutzername oder Passwort falsch.");
             return View();
         }
 
+        await AlsAdminAnmelden(admin);
+
+        return LocalRedirect("/");
+    }
+
+    private bool PasswortIstKorrekt(Admin admin, string passwort)
+    {
+        var ergebnis = _hasher.VerifyHashedPassword(admin, admin.PasswortHash, passwort);
+
+        return ergebnis != PasswordVerificationResult.Failed;
+    }
+
+    private async Task AlsAdminAnmelden(Admin admin)
+    {
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, admin.Benutzername),
@@ -59,9 +69,8 @@ public class AccountController : Controller
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var benutzer = new ClaimsPrincipal(identity);
 
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
-
-        return LocalRedirect("/");
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, benutzer);
     }
 }
