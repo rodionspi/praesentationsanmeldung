@@ -32,15 +32,12 @@ public class AccountController : Controller
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    //Kurz erklärt: Ohne das könnte eine fremde Webseite, auf der ein Benutzer zufällig gerade eingeloggt ist, heimlich ein Formular an meine App schicken und sich als ihn ausgeben — weil Cookies vom Browser automatisch mitgeschickt werden.
     public async Task<IActionResult> Login(string? benutzername, string? passwort)
-    // die Methode ist asynchron (wichtig, weil Datenbank-Zugriffe — z. B. await db.Admins... — Zeit brauchen und den Server-Thread währenddessen nicht blockieren sollen). IActionResult wird hier zu Task<IActionResult>, weil man das Ergebnis erst awaiten muss.
     {
         if (string.IsNullOrEmpty(benutzername) || string.IsNullOrEmpty(passwort))
         {
             ModelState.AddModelError("", "Bitte Benutzername und Passwort eingeben.");
             return View();
-            // ModelState (von Controller geerbt) ist das „Fehlerprotokoll“ der aktuellen Anfrage.AddModelError(Schlüssel, Text) fügt diesem einen Fehler hinzu. Der Schlüssel „“ bedeutet, dass sich der Fehler auf das gesamte Formular bezieht und nicht auf ein bestimmtes Feld.
         }
 
         var admin = await _db.Admins.SingleOrDefaultAsync(a => a.Benutzername == benutzername);
@@ -86,6 +83,7 @@ public class AccountController : Controller
         };
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var benutzer = new ClaimsPrincipal(identity);
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
     }

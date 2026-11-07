@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+using praesentationsanmeldung.Auth;
 using praesentationsanmeldung.Data;
 using praesentationsanmeldung.Models;
 
-
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
@@ -17,24 +19,18 @@ builder.Services.AddControllersWithViews(options =>
     options.ModelBindingMessageProvider.SetAttemptedValueIsInvalidAccessor((wert, feld) => $"Der Wert '{wert}' ist ungültig.");
 });
 
-builder.Services.AddAuthentication
-//Cookies werden zum Standardverfahren für die Anmeldung.
-(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Account/Login";
-        //Hierhin wird umgeleitet, wenn jemand nicht eingeloggt ist.
         options.LogoutPath = "/Account/Logout";
-        //Die Adresse für das Abmelden.
         options.AccessDeniedPath = "/Account/AccessDenied";
-        //	Hierhin wird umgeleitet, wenn jemand eingeloggt ist, aber die falsche Rolle hat (z. B. ein G3SuS auf einer Admin-Seite).
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+
         options.Cookie.Name = "Praesentationsanmeldung.Auth";
         options.Cookie.HttpOnly = true;
-        //JavaScript im Browser kann den Cookie nicht lesen. Das schützt gegen XSS.
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        //Der Cookie wird nur über HTTPS gesendet.
-        options.ExpireTimeSpan = TimeSpan.FromHours(8);
-        //Der Login gilt 8 Stunden. Bei Aktivität verlängert sich die Zeit automatisch.
     });
 
 builder.Services.AddAuthorization(options =>

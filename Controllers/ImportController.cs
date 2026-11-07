@@ -18,9 +18,11 @@ using praesentationsanmeldung.Models;
 namespace praesentationsanmeldung.Controllers;
 
 [Authorize(Roles = Rollen.Admin)]
-//Nur Nutzer mit der Rolle Admin dürfen hier reinkommen.
 public class ImportController : Controller
 {
+    private const string G3SusKopfzeile = "Vorname;Nachname;Klasse";
+    private const char UngueltigesZeichen = '�';
+
     private readonly AppDbContext _db;
     private readonly PasswordHasher<G3Sus> _hasher = new PasswordHasher<G3Sus>();
 
@@ -34,20 +36,21 @@ public class ImportController : Controller
     {
         return View();
     }
-    
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> G3SusImportieren(IFormFile? datei)
-    // Weil die Methode nicht sofort ein Ergebnis hat — sie muss erst auf Datei-Lesen und Datenbank-Speichern warten. Also sagt der Rückgabetyp ehrlich: “du bekommst nicht direkt ein IActionResult, du bekommst eine Wartemarke dafür, die sich später in ein IActionResult einlöst.”
     {
         var zeilen = await DateiLesen(datei, "Vorname;Nachname;Klasse;Email;Passwort");
         var vorhandeneEmails = new HashSet<string>(await _db.G3Sus.Select(s => s.Email).ToListAsync(), StringComparer.OrdinalIgnoreCase);
         var neue = new List<G3Sus>();
 
-        for (var i = 1; i < zeilen.Count; i++)
+        for (var index = 1; index < zeilen.Count; index++)
         {
-            var nr = i + 1;
-            if (string.IsNullOrWhiteSpace(zeilen[i]))
+            var zeile = zeilen[index];
+            var zeilenNummer = index + 1;
+
+            if (string.IsNullOrWhiteSpace(zeile))
             {
                 continue;
             }
@@ -199,32 +202,45 @@ public class ImportController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task<List<string>> DateiLesen (IFormFile? datei, string kopfzeile)
+    private async Task<List<string>> CsvDateiLesen(IFormFile? datei, string erwarteteKopfzeile)
     {
-        var zeilen = new List<string>();        
         if (datei == null || datei.Length == 0)
         {
-            ModelState.AddModelError("", "Bitte CSV-Datei auswählen.");
-            return zeilen;
+            FehlerMelden("Bitte CSV-Datei auswählen.");
+            return new List<string>();
         }
+
         if (Path.GetExtension(datei.FileName).ToLower() != ".csv")
         {
-            ModelState.AddModelError("", "Es sind nur CSV-Dateien erlaubt");
-            return zeilen;
+            FehlerMelden("Es sind nur CSV-Dateien erlaubt");
+            return new List<string>();
         }
+
+        var zeilen = await AlleZeilenLesen(datei);
+
+        if (zeilen.Count == 0 || zeilen[0].Trim() != erwarteteKopfzeile)
+        {
+            ZeilenFehlerMelden(1, $"Die Kopfzeile muss '{erwarteteKopfzeile}' sein.");
+            return new List<string>();
+        }
+
+        return zeilen;
+    }
+
+    private async Task<List<string>> AlleZeilenLesen(IFormFile datei)
+    {
+        var zeilen = new List<string>();
         using var reader = new StreamReader(datei.OpenReadStream());
-        // using sorgt dafür, dass die Datei am Ende automatisch geschlossen wird, sobald die Methode fertig ist, auch bei einem Fehler. Ohne using bleibe die Datei offen und würde unnötig Ressourcen belegen.
-        // datei.OpenReadStream(): öffnet die Datei als Stream, also als Strom von rohen Bytes, die man der Reihe nach lesen kann.
-        // StreamReader(): legt einen "Übersetzer" um diesen Stream. Rohe Bytes kann man schlecht verarbeiten. Der StreamReader macht daraus Text und bietet Methoden wie ReadLineAsync(), die eine ganze Zeile auf einmal liefern.
+
         string? zeile;
         while ((zeile = await reader.ReadLineAsync()) != null)
         // await reader.ReadLineAsync(); liest eine Zeile aus 
         {
             zeilen.Add(zeile);
-            if (zeile.Contains('\uFFFD'))
-            // Prüft, ob die aktuelle Zeile dieses Ersatzzeichen irgendwo enthält. Wenn ja, ist die Datei falsch kodiert.
+
+            if (zeile.Contains(UngueltigesZeichen))
             {
-                Fehler(zeilen.Count, "Ungültige Zeichen. Bitte die Datei als \"CSV UTF-8\" speichern.");
+                ZeilenFehlerMelden(zeilen.Count, "Ungültige Zeichen. Bitte die Datei als \"CSV UTF-8\" speichern.");
             }
         }
 
@@ -249,8 +265,13 @@ public class ImportController : Controller
         }
     }
 
-    private void Fehler(int nr, string text)
+    private void FehlerMelden(string text)
     {
-        ModelState.AddModelError("", $"Zeile {nr}: {text}");
+        ModelState.AddModelError("", text);
+    }
+
+    private void ZeilenFehlerMelden(int zeilenNummer, string text)
+    {
+        FehlerMelden($"Zeile {zeilenNummer}: {text}");
     }
 }

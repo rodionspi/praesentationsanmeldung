@@ -1,23 +1,20 @@
 using Microsoft.EntityFrameworkCore;
+<<<<<<< HEAD
+=======
 
 // Das brauche ich um C#-Code mit Datebank zu verbinden ohne dass
 // man die manuelle SQL-Befehle schreiben muss.
 // Allgemeimein Entity Framework Core (EF Core) ist ein objektrelationaler Mapper (ORM),
 // der das Speichern und Lesen von Daten in einer Datenbank aus .NET-Anwendungen heraus vereinfacht.
+>>>>>>> dc8ee20aefc8b56fa3b5a078e0ce97bec55e6d72
 using praesentationsanmeldung.Models;
 
 namespace praesentationsanmeldung.Data;
 
 public class AppDbContext : DbContext
 {
-    // wegen dem DbContext bekommt eine Klasse die Methoden dazu, wie SaveChanges(), Add() und Remove().
-    public AppDbContext(DbContextOptions<AppDbContext> options) :base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
-        // in options wird übergeben welche Datenbank verwendet wird also SQL Server wird bei uns
-        //benutzt und es wird auch dort übergibt wo die datenbank liegt
-
-        // :base(options) schickt einfach options zum Konstruktor von DbContext weiter,
-        // da DbContext diesen SQL-Server-Pfad unbedingt kennen müss
     }
 
     public DbSet<Admin> Admins => Set<Admin>();
@@ -25,30 +22,17 @@ public class AppDbContext : DbContext
     public DbSet<Raum> Raeume => Set<Raum>();
     public DbSet<Praesentation> Praesentationen => Set<Praesentation>();
     public DbSet<Eintragung> Eintragungen => Set<Eintragung>();
-    // DBSet<Admin> entspricht einer "Tabelle" mit Objekten vom Typ Admin(ist alles in Admin.cs)
-    // Admins ist die Name der Eigenschfat und standartmässig auch der Tabellenname in SQL
-    // Das => Set<Admin>() ist eine Anweisung, damit DbContext eine Verbindung zur Tabelle von Admins herstellt
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // mit override sagen wir, dass die geerbte Methode überschrieben werden soll.
         base.OnModelCreating(modelBuilder);
-        // OnModelCreating ist eine Methode aus DbContext, die EF Core einmal beim Start
-        // aufruft, um das Datenbankmodell aufzubauen
-        // also hier haben wir die OnMOdelCreating Funktion übergeschrieben, aber rufen zuerst die Originalversion
-        // der Elternklasse auf, damit deren Standartkonfiguration erhalten bleibt.
-        // Das ist gute Praxis, auch wenn sie im Moment nichts Besonderes macht.
 
         modelBuilder.Entity<Admin>(entity =>
-        // wählt die Entität Admin aus. entity => { ... } ist ein Lambda-Ausdruck: eine kleine anonyme
-        // Funktion, die das Objekt entity bekommt, mit dem wir Admin konfigurieren.
         {
             entity.Property(a => a.Benutzername).IsRequired().HasMaxLength(100);
-            // a steht für "ein Admin"
             entity.Property(a => a.PasswortHash).IsRequired();
             entity.HasIndex(a => a.Benutzername).IsUnique();
         });
-        // Hier ist eigentlich alles logisch.
 
         modelBuilder.Entity<G3Sus>(entity =>
         {
@@ -71,12 +55,10 @@ public class AppDbContext : DbContext
             entity.Property(p => p.Titel).IsRequired().HasMaxLength(200);
             entity.Property(p => p.Beschreibung).HasMaxLength(2000);
 
-            // Ein Raum mit geplanten Präsentationen darf nicht gelöscht werden.
             entity.HasOne(p => p.Raum)
                 .WithMany(r => r.Praesentationen)
                 .HasForeignKey(p => p.RaumId)
                 .OnDelete(DeleteBehavior.Restrict);
-            // Wenn jemand einen Raum löschen will, in dem noch Präsentationen stattfinden, wird ein Fehler ausgegeben.
         });
 
         modelBuilder.Entity<Eintragung>(entity =>
@@ -90,11 +72,8 @@ public class AppDbContext : DbContext
                 .WithMany(p => p.Eintragungen)
                 .HasForeignKey(e => e.PraesentationId)
                 .OnDelete(DeleteBehavior.Cascade);
-            // DeleteBehavior.Cascade heisst, wenn ein Schüler gelöscht wird,
-            // dann werden alle seine Eintragungen automatisch mitgelöscht.
 
             entity.HasIndex(e => new { e.G3SusId, e.PraesentationId }).IsUnique();
-            // IsUnique für diesen Objekt heisst, dass es nur einmal z.B {5, 1} in Datenbank reingeschrieben kann.
         });
     }
 }
