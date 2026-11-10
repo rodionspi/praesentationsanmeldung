@@ -77,6 +77,12 @@ public class AnmeldungController : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        if (await _db.Eintragungen.AnyAsync(e => e.G3SusId == g3SusId && e.Praesentation.Beginn == praesentation.Beginn))
+        {
+            TempData["Fehler"] = "Du bist zur gleichen Zeit schon für eine andere Präsentation eingetragen.";
+            return RedirectToAction(nameof(Index));
+        }
+
         var belegt = await _db.Eintragungen.CountAsync(e => e.PraesentationId == id);
         if (belegt >= praesentation.Raum.Kapazitaet)
         {
