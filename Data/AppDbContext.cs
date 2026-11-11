@@ -1,12 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-<<<<<<< HEAD
-=======
 
 // Das brauche ich um C#-Code mit Datebank zu verbinden ohne dass
 // man die manuelle SQL-Befehle schreiben muss.
 // Allgemeimein Entity Framework Core (EF Core) ist ein objektrelationaler Mapper (ORM),
 // der das Speichern und Lesen von Daten in einer Datenbank aus .NET-Anwendungen heraus vereinfacht.
->>>>>>> dc8ee20aefc8b56fa3b5a078e0ce97bec55e6d72
 using praesentationsanmeldung.Models;
 
 namespace praesentationsanmeldung.Data;

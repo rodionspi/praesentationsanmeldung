@@ -55,10 +55,10 @@ public class ImportController : Controller
                 continue;
             }
 
-            var spalten = zeilen[i].Split(";");
+            var spalten = zeilen[index].Split(";");
             if (spalten.Length != 5)
             {
-                Fehler(nr, $"5 Spalten erwartet, aber {spalten.Length} gefunden");
+                Fehler(index, $"5 Spalten erwartet, aber {spalten.Length} gefunden");
                 continue;
             }
 
@@ -68,24 +68,24 @@ public class ImportController : Controller
             var email = spalten[3].Trim();
             var passwort = spalten[4].Trim();
 
-            TextPruefen(nr, "Vorname", vorname, 100);
-            TextPruefen(nr, "Nachname", nachname, 100);
-            TextPruefen(nr, "Klasse", klasse, 20);
-            TextPruefen(nr, "E-Mail", email, 200);
+            TextPruefen(index, "Vorname", vorname, 100);
+            TextPruefen(index, "Nachname", nachname, 100);
+            TextPruefen(index, "Klasse", klasse, 20);
+            TextPruefen(index, "E-Mail", email, 200);
 
             if (email != "" && !MailAddress.TryCreate(email, out _))
             {
-                Fehler(nr, $"E-Mail '{email}' ist ungültig.");
+                Fehler(index, $"E-Mail '{email}' ist ungültig.");
             }
 
             if (email != "" && !vorhandeneEmails.Add(email))
             {
-                Fehler(nr, $"E-Mail '{email}' gibt es schon.");
+                Fehler(index, $"E-Mail '{email}' gibt es schon.");
             }
 
             if (passwort.Length < 8)
             {
-                Fehler(nr, "Das Passwort muss mindestens 8 Zeichen lang sein.");
+                Fehler(index, "Das Passwort muss mindestens 8 Zeichen lang sein.");
             }
 
             var neuer = new G3Sus { Vorname = vorname, Nachname = nachname, Klasse = klasse, Email = email };
@@ -202,7 +202,7 @@ public class ImportController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private async Task<List<string>> CsvDateiLesen(IFormFile? datei, string erwarteteKopfzeile)
+    private async Task<List<string>> DateiLesen(IFormFile? datei, string erwarteteKopfzeile)
     {
         if (datei == null || datei.Length == 0)
         {
@@ -220,7 +220,7 @@ public class ImportController : Controller
 
         if (zeilen.Count == 0 || zeilen[0].Trim() != erwarteteKopfzeile)
         {
-            ZeilenFehlerMelden(1, $"Die Kopfzeile muss '{erwarteteKopfzeile}' sein.");
+            Fehler(1, $"Die Kopfzeile muss '{erwarteteKopfzeile}' sein.");
             return new List<string>();
         }
 
@@ -240,13 +240,13 @@ public class ImportController : Controller
 
             if (zeile.Contains(UngueltigesZeichen))
             {
-                ZeilenFehlerMelden(zeilen.Count, "Ungültige Zeichen. Bitte die Datei als \"CSV UTF-8\" speichern.");
+                Fehler(zeilen.Count, "Ungültige Zeichen. Bitte die Datei als \"CSV UTF-8\" speichern.");
             }
         }
 
-        if (zeilen.Count == 0 || zeilen[0].Trim() != kopfzeile)
+        if (zeilen.Count == 0 || zeilen[0].Trim() != G3SusKopfzeile)
         {
-            Fehler(1, $"Die Kopfzeile muss '{kopfzeile}' sein.");
+            Fehler(1, $"Die Kopfzeile muss '{G3SusKopfzeile}' sein.");
             return new List<string>();
         }
 
@@ -270,7 +270,7 @@ public class ImportController : Controller
         ModelState.AddModelError("", text);
     }
 
-    private void ZeilenFehlerMelden(int zeilenNummer, string text)
+    private void Fehler(int zeilenNummer, string text)
     {
         FehlerMelden($"Zeile {zeilenNummer}: {text}");
     }
