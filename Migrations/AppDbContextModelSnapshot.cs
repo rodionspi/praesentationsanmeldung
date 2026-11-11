@@ -165,7 +165,10 @@ namespace praesentationsanmeldung.Migrations
                     b.HasIndex("Bezeichnung")
                         .IsUnique();
 
-                    b.ToTable("Raeume");
+                    b.ToTable("Raeume", t =>
+                        {
+                            t.HasCheckConstraint("CK_Raeume_Kapazitaet", "[Kapazitaet] > 0");
+                        });
                 });
 
             modelBuilder.Entity("praesentationsanmeldung.Models.Eintragung", b =>

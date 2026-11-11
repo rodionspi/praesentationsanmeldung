@@ -41,7 +41,6 @@ public class AccountController : Controller
         }
 
         var admin = await _db.Admins.SingleOrDefaultAsync(a => a.Benutzername == benutzername);
-        // 
         if (admin != null && _adminHasher.VerifyHashedPassword(admin, admin.PasswortHash, passwort) != PasswordVerificationResult.Failed)
         {
             await Anmelden(admin.Id, admin.Benutzername, Rollen.Admin);
@@ -85,6 +84,6 @@ public class AccountController : Controller
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var benutzer = new ClaimsPrincipal(identity);
 
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, benutzer);
     }
 }

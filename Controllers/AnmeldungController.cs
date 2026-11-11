@@ -67,6 +67,12 @@ public class AnmeldungController : Controller
             return NotFound();
         }
 
+        if (praesentation.Beginn <= DateTime.Now)
+        {
+            TempData["Fehler"] = "Diese Präsentation hat schon begonnen.";
+            return RedirectToAction(nameof(Index));
+        }
+
         var g3Sus = await _db.G3Sus
             .FromSql($"SELECT * FROM G3Sus WITH (UPDLOCK) WHERE Id = {g3SusId}")
             .SingleAsync();

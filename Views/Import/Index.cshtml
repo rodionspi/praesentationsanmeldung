@@ -8,9 +8,7 @@
     <div class="card-body">
         <h2 class="h5">G3SuS</h2>
         <p>Kopfzeile: <code>Vorname;Nachname;Klasse;Email;Passwort</code></p>
-        <form action="/Import/G3SusImportieren" enctype="multipart/form-data" method="post">
-            @Html.AntiForgeryToken()
-            <!-- Es fügt ein verstecktes Formularfeld mit einem zufälligen, signierten Token ein. -->
+        <form asp-action="G3SusImportieren" enctype="multipart/form-data" method="post">
             <input type="file" name="datei" accept=".csv" class="form-control mb-2" required>
             <button type="submit" class="btn btn-primary">Importieren</button>
         </form>
@@ -21,8 +19,7 @@
     <div class="card-body">
         <h2 class="h5">Präsentationen</h2>
         <p>Kopfzeile: <code>Titel;Beschreibung;Beginn;Raum</code></p>
-        <form action="/Import/PraesentationenImportieren" enctype="multipart/form-data" method="post">
-            @Html.AntiForgeryToken()
+        <form asp-action="PraesentationenImportieren" enctype="multipart/form-data" method="post">
             <input type="file" name="datei" accept=".csv" class="form-control mb-2" required>
             <button type="submit" class="btn btn-primary">Importieren</button>
         </form>
