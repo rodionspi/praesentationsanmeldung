@@ -51,6 +51,7 @@ coverage*.xml
 Thumbs.db
 Desktop.ini
 .DS_Store
+meanings.txt
 
 # Claude Code
 .claude/
@@ -58,6 +59,3 @@ CLAUDE.md
 CLAUDE.local.md
 .claude.json
 .mcp.json
-
-# Eigene Notizen
-meanings.txt

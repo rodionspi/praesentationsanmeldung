@@ -20,7 +20,7 @@ namespace praesentationsanmeldung.Controllers;
 [Authorize(Roles = Rollen.Admin)]
 public class ImportController : Controller
 {
-    private const string G3SusKopfzeile = "Vorname;Nachname;Klasse";
+    private const string G3SusKopfzeile = "Vorname;Nachname;Klasse;Email;Passwort";
     private const char UngueltigesZeichen = '�';
 
     private readonly AppDbContext _db;
@@ -41,7 +41,7 @@ public class ImportController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> G3SusImportieren(IFormFile? datei)
     {
-        var zeilen = await DateiLesen(datei, "Vorname;Nachname;Klasse;Email;Passwort");
+        var zeilen = await DateiLesen(datei, G3SusKopfzeile);
         var vorhandeneEmails = new HashSet<string>(await _db.G3Sus.Select(s => s.Email).ToListAsync(), StringComparer.OrdinalIgnoreCase);
         var neue = new List<G3Sus>();
 
@@ -242,12 +242,6 @@ public class ImportController : Controller
             {
                 Fehler(zeilen.Count, "Ungültige Zeichen. Bitte die Datei als \"CSV UTF-8\" speichern.");
             }
-        }
-
-        if (zeilen.Count == 0 || zeilen[0].Trim() != G3SusKopfzeile)
-        {
-            Fehler(1, $"Die Kopfzeile muss '{G3SusKopfzeile}' sein.");
-            return new List<string>();
         }
 
         return zeilen;
