@@ -45,6 +45,7 @@ public class AppDbContext : DbContext
         {
             entity.Property(r => r.Bezeichnung).IsRequired().HasMaxLength(50);
             entity.HasIndex(r => r.Bezeichnung).IsUnique();
+            entity.ToTable(t => t.HasCheckConstraint("CK_Raeume_Kapazitaet", "[Kapazitaet] > 0"));
         });
 
         modelBuilder.Entity<Praesentation>(entity =>

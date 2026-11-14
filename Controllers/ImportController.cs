@@ -20,7 +20,7 @@ namespace praesentationsanmeldung.Controllers;
 [Authorize(Roles = Rollen.Admin)]
 public class ImportController : Controller
 {
-    private const string G3SusKopfzeile = "Vorname;Nachname;Klasse";
+    private const string G3SusKopfzeile = "Vorname;Nachname;Klasse;Email;Passwort";
     private const char UngueltigesZeichen = '�';
 
     private readonly AppDbContext _db;
@@ -41,7 +41,7 @@ public class ImportController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> G3SusImportieren(IFormFile? datei)
     {
-        var zeilen = await DateiLesen(datei, "Vorname;Nachname;Klasse;Email;Passwort");
+        var zeilen = await DateiLesen(datei, G3SusKopfzeile);
         var vorhandeneEmails = new HashSet<string>(await _db.G3Sus.Select(s => s.Email).ToListAsync(), StringComparer.OrdinalIgnoreCase);
         var neue = new List<G3Sus>();
 
@@ -58,7 +58,7 @@ public class ImportController : Controller
             var spalten = zeilen[index].Split(";");
             if (spalten.Length != 5)
             {
-                Fehler(index, $"5 Spalten erwartet, aber {spalten.Length} gefunden");
+                Fehler(zeilenNummer, $"5 Spalten erwartet, aber {spalten.Length} gefunden");
                 continue;
             }
 
@@ -68,24 +68,24 @@ public class ImportController : Controller
             var email = spalten[3].Trim();
             var passwort = spalten[4].Trim();
 
-            TextPruefen(index, "Vorname", vorname, 100);
-            TextPruefen(index, "Nachname", nachname, 100);
-            TextPruefen(index, "Klasse", klasse, 20);
-            TextPruefen(index, "E-Mail", email, 200);
+            TextPruefen(zeilenNummer, "Vorname", vorname, 100);
+            TextPruefen(zeilenNummer, "Nachname", nachname, 100);
+            TextPruefen(zeilenNummer, "Klasse", klasse, 20);
+            TextPruefen(zeilenNummer, "E-Mail", email, 200);
 
             if (email != "" && !MailAddress.TryCreate(email, out _))
             {
-                Fehler(index, $"E-Mail '{email}' ist ungültig.");
+                Fehler(zeilenNummer, $"E-Mail '{email}' ist ungültig.");
             }
 
             if (email != "" && !vorhandeneEmails.Add(email))
             {
-                Fehler(index, $"E-Mail '{email}' gibt es schon.");
+                Fehler(zeilenNummer, $"E-Mail '{email}' gibt es schon.");
             }
 
             if (passwort.Length < 8)
             {
-                Fehler(index, "Das Passwort muss mindestens 8 Zeichen lang sein.");
+                Fehler(zeilenNummer, "Das Passwort muss mindestens 8 Zeichen lang sein.");
             }
 
             var neuer = new G3Sus { Vorname = vorname, Nachname = nachname, Klasse = klasse, Email = email };
@@ -208,7 +208,7 @@ public class ImportController : Controller
         {
             FehlerMelden("Bitte CSV-Datei auswählen.");
             return new List<string>();
-        }
+    }
 
         if (Path.GetExtension(datei.FileName).ToLower() != ".csv")
         {
@@ -242,12 +242,6 @@ public class ImportController : Controller
             {
                 Fehler(zeilen.Count, "Ungültige Zeichen. Bitte die Datei als \"CSV UTF-8\" speichern.");
             }
-        }
-
-        if (zeilen.Count == 0 || zeilen[0].Trim() != G3SusKopfzeile)
-        {
-            Fehler(1, $"Die Kopfzeile muss '{G3SusKopfzeile}' sein.");
-            return new List<string>();
         }
 
         return zeilen;
