@@ -51,6 +51,12 @@ public class PraesentationenController : Controller
             return View(praesentation);
         }
 
+        if (praesentation.Beginn <= DateTime.Now)
+        {
+            ModelState.AddModelError(nameof(Praesentation.Beginn), "Der Beginn muss in der Zukunft liegen.");
+
+        }
+
         _db.Praesentationen.Add(praesentation);
         await _db.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
